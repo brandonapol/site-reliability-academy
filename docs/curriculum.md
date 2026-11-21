@@ -9,7 +9,7 @@ teaches, where it runs and what the learner produces. It does not contain the le
 | Track | Audience | Length | Runs in |
 | --- | --- | --- | --- |
 | **Practitioner** | New grads, and engineers who haven't done SRE | 28 weeks at 6–8 h/week | Browser, then a local cluster, then the learner's own cloud account |
-| **Reliability for Everyone** | Product owners, managers, support, sales, business | 8 modules at 1–2 h each | Browser only; nothing is ever typed |
+| **Reliability for Everyone** | Product owners, managers, support, sales, business | 9 modules at 1–2 h each | Browser only; nothing is ever typed |
 
 The two tracks share the same fictional company (Inkwell), the same first four weeks, and the same
 incidents seen from different seats. A product owner and an engineer who both finish should be able to sit
@@ -67,7 +67,7 @@ hands straight to the interactive part. The shape of a lesson is always the same
 3. **Check**: the "know before moving on" list.
 4. **Keep**: the artifact, where the lesson has one.
 
-One video per week of the Practitioner track and one per Reliability for Everyone module is 35 videos,
+One video per week of the Practitioner track and one per Reliability for Everyone module is 36 videos,
 about six hours of footage (Phase 1 and module 1 share theirs). Start there; split a week into
 two videos only where one clearly can't carry it.
 
@@ -127,16 +127,22 @@ More than the intro fits here. The engine's seeded telemetry can back all of the
 - An SLO workbench: pick an SLI, set a target, replay a month, watch the budget.
 - A burn-rate alert simulator: tune windows and thresholds against replayed incidents, count pages.
 - A query playground over generated series and logs (a small PromQL/LogQL subset).
-- A simulated shell and Git, as Flack does, for the Linux and Git weeks.
+- A Linux terminal for the Linux and Git weeks, in two forms behind one mission interface (seed, check
+  goal, reset) and one terminal front end. Early file and text missions use a simulated shell
+  (`just-bash`), which loads instantly. Process, port, disk, signal and Git missions use real Linux
+  emulated in the browser (`v86` with an Alpine image), restored from a per-mission snapshot so running
+  processes and a full disk come back exactly. Snapshot size (estimated at 10–30 MB) needs measuring.
 - Paper Wheel of Misfortune: branching incidents where the "cluster" is the simulation.
 - NALSD calculators: back-of-envelope capacity sums with checked answers.
 
-Progress is stored locally, with optional sign-in to sync.
+Progress is stored in the browser only in the first release, so the site stays fully static. Sign-in
+and sync come later.
 
 ### Tier 1: local cluster
 
 `kind` plus tinyo11y plus scenario products, which is exactly what sre-crashout's `make drill/*` targets
-already do. The academy needs two additions:
+already do. Sre-crashout stays its own repository, usable by teams on its own, and publishes a container
+image and Helm charts that the academy pulls. The academy needs two additions:
 
 - **A learner CLI** (`sra`, say) wrapping setup, `lab start`, `lab verify` and `lab reset`, so a learner
   never reads a Makefile on day one.
@@ -369,7 +375,7 @@ honour-system like every other lab.
 postmortem: where it was right, where it was confidently wrong, and what they would change. Part A exists
 so they are able to write it.
 
-## 5. Reliability for Everyone: 8 modules
+## 5. Reliability for Everyone: 9 modules
 
 Browser only. The feauxbernetes rule holds throughout: the learner never types code, YAML or a command.
 Each module is one sitting.
@@ -384,6 +390,7 @@ Each module is one sitting.
 | 6 | In the incident room | Plays customer liaison and communications lead in the same incidents engineers debug in Phase 4 | Severity, roles, status updates that help |
 | 7 | Afterwards | Reads a postmortem, rewrites blaming sentences, ranks action items against a roadmap | Blamelessness; why follow-through is a product decision |
 | 8 | Working with SRE | Chooses an engagement model for three teams; reads an on-call health report; spots toil as cost | What to ask for and what to offer |
+| 9 | AI in the incident room | Reads three AI-written incident summaries against what really happened and finds the confident mistake; decides what an agent may do unapproved | What to expect from AI in incident response, and what to ask before trusting it |
 
 Capstone: an SLO and error budget policy, one page, for a product the learner actually works on.
 
@@ -472,6 +479,10 @@ Settled:
 - **28 weeks.** Release engineering has two weeks and the wider-job week is restored.
 - **Human hard drill stays** in the capstone, before the agent exam.
 - **The exam scenario gets its own repository**, kept private.
+- **Linux terminal: hybrid.** Simulated shell for early missions, `v86` real Linux for the rest.
+- **Sre-crashout stays separate** and publishes an image and charts the academy pulls.
+- **No sign-in in the first release.** Progress lives in the browser.
+- **Reliability for Everyone has nine modules**, the ninth on AI in incident response.
 
 Open:
 
@@ -483,5 +494,3 @@ Open:
 3. **Build order.** Recommended: ingest feauxbernetes, then Reliability for Everyone modules 2–5 (browser
    only, reuses the existing telemetry engine), then Phase 3, then Phase 4 on top of sre-crashout. Film
    each batch's videos once its interactive part is stable, so the video and the exercise agree.
-4. **Does Reliability for Everyone get an AI module?** A short ninth module on what to expect from AI in
-   incident response would fit, but it isn't in the plan yet.
