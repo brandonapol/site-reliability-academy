@@ -1,0 +1,30 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  padding: 0.35rem 1rem;
+  background: var(--text);
+  color: var(--paper);
+  font-size: 0.9rem;
+}
+
+.bar a {
+  color: inherit;
+}
+
+.back {
+  font-weight: 600;
+}
+
+.title {
+  opacity: 0.85;
+}
+
+.done {
+  margin-left: auto;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--success);
+  color: #fff;
+}

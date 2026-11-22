@@ -5,7 +5,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 const purityMessage =
-  'The simulation must stay framework-free: packages/engine and src/content may not import React or reach into src/features or src/store.'
+  'Content and course data must stay framework-free: src/content, src/course and the progress model may not import React or reach into src/features or src/store.'
 
 const enginePurityMessage =
   'packages/engine is the framework-free simulation the whole site builds on: it may not import React, Zustand or anything from src/.'
@@ -23,7 +23,7 @@ export default tseslint.config(
   },
 
   {
-    files: ['src/features/**/*.{ts,tsx}'],
+    files: ['src/features/**/*.{ts,tsx}', 'src/academy/**/*.{ts,tsx}', 'src/play/**/*.{ts,tsx}'],
     extends: [reactHooks.configs.flat['recommended-latest'], reactRefresh.configs.vite],
   },
 
@@ -51,7 +51,7 @@ export default tseslint.config(
   },
 
   {
-    files: ['src/content/**/*.{ts,tsx}'],
+    files: ['src/content/**/*.{ts,tsx}', 'src/course/**/*.{ts,tsx}', 'src/progress/progress.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
