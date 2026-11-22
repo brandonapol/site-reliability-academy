@@ -8,6 +8,8 @@
  * never change an `id`.
  */
 
+import type { PolicyNotice } from './policy'
+
 /** Where a lesson runs: the three tiers in docs/curriculum.md section 3. */
 export type Tier = 'browser' | 'local' | 'cloud'
 
@@ -75,8 +77,8 @@ export interface Phase {
   summary: string
   /** The phase's culture thread (spec section 6). */
   culture?: string
-  /** Shown at the start of the phase, e.g. the AI policy at Phase 4. */
-  notice?: 'ai-policy' | 'ai-policy-reminder' | 'ai-policy-flip'
+  /** Shown at the start of the phase, e.g. the AI policy reminder at Phase 4. */
+  notice?: PolicyNotice
   units: Unit[]
 }
 
@@ -88,7 +90,8 @@ export interface Track {
   runsIn: string
   /** What a graduate can do, from spec section 1. */
   outcomes: string[]
-  notice?: 'ai-policy' | 'ai-policy-everyone'
+  /** Shown at the top of the track: the AI policy. */
+  notice?: PolicyNotice
   phases: Phase[]
 }
 

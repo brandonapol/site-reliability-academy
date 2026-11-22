@@ -4,6 +4,7 @@ import { COURSE, findTrack, type Unit } from '../course'
 import { groupStatus, lessonStatus } from '../progress/progress'
 import { lessonHref } from './links'
 import { StatusMark, TierBadges } from './parts'
+import { PolicyNotice } from './PolicyNotice'
 import { useProgress } from '../progress/react'
 
 function unitLabel(unit: Unit): string {
@@ -53,6 +54,8 @@ export function CourseMap() {
         </ul>
       </details>
 
+      {track.notice && <PolicyNotice notice={track.notice} level={2} />}
+
       {track.phases.map((phase) => {
         const showPhaseHeading = track.phases.length > 1
         const lessons = phase.units.flatMap((unit) => unit.lessons)
@@ -74,6 +77,8 @@ export function CourseMap() {
                 <strong>Culture thread:</strong> {phase.culture}
               </p>
             )}
+
+            {phase.notice && <PolicyNotice notice={phase.notice} level={3} />}
 
             <ol className="units">
               {phase.units.map((unit) => (

@@ -21,13 +21,16 @@ function lesson(id: string, extra: Partial<Lesson> = {}): Lesson {
 }
 
 /** A copy of the course with `extra` appended to the first Practitioner unit with no lessons. */
-function withLesson(extra: Lesson): Course {
+function withLesson(extra: Lesson): { course: Course; unitId: string; previousId?: string } {
   const course: Course = structuredClone(COURSE)
-  const unit = course.tracks[0].phases
-    .flatMap((phase) => phase.units)
-    .find((u) => !u.lessons.length)
-  unit!.lessons.push(extra)
-  return course
+  const units = course.tracks[0].phases.flatMap((phase) => phase.units)
+  const index = units.findIndex((u) => !u.lessons.length)
+  const previousId = units
+    .slice(0, index)
+    .flatMap((u) => u.lessons)
+    .at(-1)?.id
+  units[index].lessons.push(extra)
+  return { course, unitId: units[index].id, previousId }
 }
 
 describe('the course data', () => {
@@ -71,31 +74,31 @@ describe('the course data', () => {
 
 describe('adding a lesson', () => {
   it('needs only data: the new lesson is found, placed and given neighbours', () => {
-    const course = withLesson(lesson('linux-first-steps'))
+    const { course, unitId, previousId } = withLesson(lesson('a-brand-new-lesson'))
     expect(validateCourse(course, CHAPTER_IDS)).toEqual([])
-    expect(findLesson(course, 'linux-first-steps')?.title).toBe('linux-first-steps')
-    const placement = placementFor(course, 'linux-first-steps')!
-    expect(placement.unit.id).toBe('week-05')
-    expect(neighbours(placement.track, 'linux-first-steps').previous?.id).toBe('inkwell-first-page')
+    expect(findLesson(course, 'a-brand-new-lesson')?.title).toBe('a-brand-new-lesson')
+    const placement = placementFor(course, 'a-brand-new-lesson')!
+    expect(placement.unit.id).toBe(unitId)
+    expect(neighbours(placement.track, 'a-brand-new-lesson').previous?.id).toBe(previousId)
   })
 })
 
 describe('validateCourse', () => {
   it('rejects a duplicate lesson id', () => {
-    const course = withLesson(lesson('inkwell-boxes'))
+    const { course } = withLesson(lesson('inkwell-boxes'))
     expect(validateCourse(course, CHAPTER_IDS)).toContain(
       'lesson id "inkwell-boxes" is used by two lessons'
     )
   })
 
   it('rejects a lesson id that collides with a unit id', () => {
-    expect(validateCourse(withLesson(lesson('week-01')), CHAPTER_IDS)).toContain(
+    expect(validateCourse(withLesson(lesson('week-01')).course, CHAPTER_IDS)).toContain(
       'lesson id "week-01" is already used by a unit'
     )
   })
 
   it('rejects a dangling chapter reference', () => {
-    const course = withLesson(
+    const { course } = withLesson(
       lesson('missing-chapter', { do: { kind: 'game', chapters: ['99-nope'], summary: '' } })
     )
     expect(validateCourse(course, CHAPTER_IDS)).toContain(
@@ -104,7 +107,7 @@ describe('validateCourse', () => {
   })
 
   it('rejects ids that are not kebab-case, and repeated check items', () => {
-    const course = withLesson(
+    const { course } = withLesson(
       lesson('Bad_Id', {
         check: [
           { id: 'one', text: 'One' },
