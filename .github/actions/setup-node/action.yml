@@ -1,0 +1,24 @@
+name: Setup Node
+description: Node from .nvmrc and the npm workspace's node_modules, with retries.
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+    - name: Install node modules
+      shell: bash
+      run: |
+        # The npm registry drops connections often enough that one install fails a job
+        # whose tree is fine, so retry before calling it a failure.
+        attempt=1
+        until npm ci; do
+          if [ "$attempt" -ge 3 ]; then
+            exit 1
+          fi
+          echo "npm ci failed (attempt ${attempt}); retrying"
+          attempt=$((attempt + 1))
+          sleep $((attempt * 5))
+        done

@@ -6,7 +6,7 @@ import {
   findLesson,
   findTrack,
   lessonsOf,
-  neighbours,
+  neighbors,
   placementFor,
   placementsOf,
   validateCourse,
@@ -73,13 +73,13 @@ describe('the course data', () => {
 })
 
 describe('adding a lesson', () => {
-  it('needs only data: the new lesson is found, placed and given neighbours', () => {
+  it('needs only data: the new lesson is found, placed and given neighbors', () => {
     const { course, unitId, previousId } = withLesson(lesson('a-brand-new-lesson'))
     expect(validateCourse(course, CHAPTER_IDS)).toEqual([])
     expect(findLesson(course, 'a-brand-new-lesson')?.title).toBe('a-brand-new-lesson')
     const placement = placementFor(course, 'a-brand-new-lesson')!
     expect(placement.unit.id).toBe(unitId)
-    expect(neighbours(placement.track, 'a-brand-new-lesson').previous?.id).toBe(previousId)
+    expect(neighbors(placement.track, 'a-brand-new-lesson').previous?.id).toBe(previousId)
   })
 })
 

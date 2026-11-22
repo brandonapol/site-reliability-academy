@@ -59,7 +59,7 @@ describe('progress updates', () => {
     expect(setComplete(progress, 'a', false, NOW)).toBe(progress)
   })
 
-  it('summarises a group and finds the first incomplete lesson', () => {
+  it('summarizes a group and finds the first incomplete lesson', () => {
     let progress = emptyProgress()
     expect(groupStatus(progress, PHASE_1_LESSONS)).toBe('not-started')
     progress = setComplete(progress, 'inkwell-boxes', true, NOW)

@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "anthropic.claude-code",
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "ms-playwright.playwright",
+    "streetsidesoftware.code-spell-checker",
+    "vitest.explorer"
+  ]
+}

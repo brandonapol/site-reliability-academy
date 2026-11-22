@@ -2,8 +2,7 @@
  * Pull requests, GitNub-simplified: no branches-as-a-graph, no conflicts, no working tree. A PR
  * just proposes one change (`PullRequestChange`) against one repo, and merging it applies that
  * change directly. Borrows Flack's PR shape and page conventions only — see
- * `/home/boredalaska/code/flack/src/engine/git/pullRequests.ts` for the ancestor this diverged
- * from.
+ * `src/engine/git/pullRequests.ts` in the Flack repository for the ancestor this diverged from.
  */
 import { findPullRequest } from './gitops'
 import { makeId } from './ids'
