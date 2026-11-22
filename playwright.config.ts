@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 4173
 
-// Runs against the production build under the same /feauxbernetes/ base path GitHub Pages uses.
+// Runs against the production build under the same /site-reliability-academy/ base path GitHub Pages uses.
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
@@ -10,7 +10,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: `http://localhost:${PORT}/feauxbernetes/`,
+    baseURL: `http://localhost:${PORT}/site-reliability-academy/`,
     trace: 'retain-on-failure',
     permissions: ['clipboard-read', 'clipboard-write'],
     viewport: { width: 1440, height: 900 },
@@ -23,7 +23,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
-    url: `http://localhost:${PORT}/feauxbernetes/`,
+    url: `http://localhost:${PORT}/site-reliability-academy/`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

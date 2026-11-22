@@ -1,18 +1,21 @@
-# Feauxbernetes
+# Site Reliability Academy
 
-Feauxbernetes is a free, zero-setup, in-browser game that shows people who don't write code for a
-living what Site Reliability Engineers actually do. You spend a first week on the platform team at
-Inkwell (the made-up company from [Flack](https://github.com/brandonapol/flack)). You watch a
-merged change deploy itself through a fake Argo CD, see a fake Kubernetes turn crashed things
-back on, run end-to-end tests whose failures read like English, learn what an SLO and an error
-budget are, and end the week holding the pager during an outage.
+A free, self-paced course in Site Reliability Engineering, in two tracks:
 
-You never type code, YAML or a `kubectl` command. Everything is a click, a multiple-choice pick
-or a drag.
+- **Practitioner:** 28 weeks for new grads and engineers who haven't done SRE. It starts in the
+  browser, moves to a local cluster, and ends in the learner's own cloud account.
+- **Reliability for Everyone:** 9 short browser modules for product owners, managers, support,
+  sales and business. Nothing is ever typed.
 
-Nothing is installed, nothing is real, and nothing you do can break anything.
+[`docs/curriculum.md`](./docs/curriculum.md) is the spec: what each phase and module teaches,
+where it runs and what the learner produces. Work is tracked in
+[issues](https://github.com/brandonapol/site-reliability-academy/issues), one epic per area.
 
-**Play it:** https://brandonapol.github.io/feauxbernetes/
+Phase 1 is [feauxbernetes](https://github.com/brandonapol/feauxbernetes), the in-browser game
+about a first week on Inkwell's platform team. It was merged into this repository with its
+history. Its design notes are in
+[`docs/feauxbernetes-planning.md`](./docs/feauxbernetes-planning.md). Code comments that say
+"planning.md" mean that file.
 
 ## Running it
 
@@ -21,15 +24,13 @@ npm ci
 npm run dev
 ```
 
-**Node 24** is what `.nvmrc` and CI use (`nvm use`). Node **22.22+** often works for `npm run dev`
-but you may see `EBADENGINE` warnings from packages that ask for 24. The first time you run
-`npm run e2e`, install its browser with `npx playwright install chromium`. Add `?fast=1` to the
-URL to shrink every scripted delay a hundredfold (the E2E tests do).
+CI uses **Node 24**, set in `.nvmrc` (`nvm use`). The first time you run `npm run e2e`, install
+its browser with `npx playwright install chromium`. Add `?fast=1` to the game's URL to shrink
+every scripted delay a hundredfold (the E2E tests do).
 
-Every push to `main` publishes the built site to the `github-pages` branch, which GitHub Pages
-serves (`.github/workflows/pages-branch.yml`). Builds use the base path `/feauxbernetes/`; set
-`BASE_PATH` to host it somewhere else (`BASE_PATH=/ npm run build`). Routes live in the hash
-(`/#/argh-cd/…`), so deep links work on any static host.
+Builds use the base path `/site-reliability-academy/`. To host the site somewhere else, set
+`BASE_PATH` (`BASE_PATH=/ npm run build`). Routes live in the URL hash, so deep links work on any
+static host.
 
 | Script               | What it does                              |
 | -------------------- | ----------------------------------------- |
@@ -47,18 +48,12 @@ serves (`.github/workflows/pages-branch.yml`). Builds use the base path `/feauxb
 
 ```
 src/engine/{cluster,gitops,ci,telemetry,incident,story,testlab}
-                               the simulation — pure TypeScript, no React, no DOM
-src/content                    the world: chapters, characters, glossary, docs links
+                               the simulation: pure TypeScript, no React, no DOM
+src/content                    the game world: chapters, characters, glossary, docs links
 src/store                      Zustand store, clock, persistence
-src/features/*                 the UI panels (Flack, GitNub, Argh CD, Ops Console, …)
+src/features/*                 the game's UI panels (Flack, GitNub, Argh CD, Ops Console, …)
 e2e/                           Playwright specs
 ```
 
-`src/engine/**` and `src/content/**` may not import React or reach into `src/features` or
-`src/store` — a lint rule enforces it. The simulation has to be testable without a browser.
-
-## Plan
-
-[`planning.md`](./planning.md) is the source of truth for what this is and what's left to build.
-Work is tracked in [issues](https://github.com/brandonapol/feauxbernetes/issues), with
-[#41](https://github.com/brandonapol/feauxbernetes/issues/41) as the roadmap.
+`src/engine/**` and `src/content/**` may not import React, or anything from `src/features` or
+`src/store`. A lint rule enforces this, so the simulation can be tested without a browser.

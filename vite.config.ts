@@ -1,10 +1,13 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
-// Built (and previewed) for GitHub Pages at /feauxbernetes/ by default; set BASE_PATH to host it
+// Built (and previewed) for GitHub Pages at /site-reliability-academy/ by default; set BASE_PATH to host it
 // anywhere else. The dev server stays at /.
 export default defineConfig(({ command, isPreview }) => ({
-  base: command === 'build' || isPreview ? (process.env.BASE_PATH ?? '/feauxbernetes/') : '/',
+  base:
+    command === 'build' || isPreview
+      ? (process.env.BASE_PATH ?? '/site-reliability-academy/')
+      : '/',
   plugins: [react()],
   test: {
     projects: [
