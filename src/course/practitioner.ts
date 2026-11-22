@@ -260,7 +260,7 @@ export const PRACTITIONER: Track = {
       span: 'Weeks 24–28',
       tiers: ['browser', 'local'],
       summary: 'Design with numbers, the wider job, your own AI SRE agent, and the capstone.',
-      culture: 'How SRE fits an organisation, and judgement stays with people.',
+      culture: 'How SRE fits an organization, and judgment stays with people.',
       notice: 'ai-policy-flip',
       units: [
         week(

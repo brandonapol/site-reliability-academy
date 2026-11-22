@@ -33,7 +33,9 @@ export const trafficSpikeChapter: Chapter = {
       ],
       solution: { type: 'chooseOption', stepId: 'not-a-page', optionId: 'ticket' },
       goal: (_state, event) =>
-        event.type === 'optionChosen' && event.stepId === 'not-a-page' && event.optionId === 'ticket',
+        event.type === 'optionChosen' &&
+        event.stepId === 'not-a-page' &&
+        event.optionId === 'ticket',
       wrongAnswers: {
         page: 'Kai: "Errors are fine. Customers are slower, not broken. That’s a ticket. We add copies after coffee."',
       },

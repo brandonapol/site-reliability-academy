@@ -48,7 +48,7 @@ export function lessonsOfUnit(unit: Unit): Lesson[] {
 }
 
 /** The lessons either side of `lessonId` within one track. */
-export function neighbours(track: Track, lessonId: string): { previous?: Lesson; next?: Lesson } {
+export function neighbors(track: Track, lessonId: string): { previous?: Lesson; next?: Lesson } {
   const lessons = lessonsOf(track)
   const index = lessons.findIndex((lesson) => lesson.id === lessonId)
   if (index < 0) return {}

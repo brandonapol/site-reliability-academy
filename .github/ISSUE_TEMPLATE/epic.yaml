@@ -1,0 +1,29 @@
+name: EPIC
+description: File a new epic. Its tickets attach to it as sub-issues.
+title: '[EPIC] '
+labels: ['epic']
+assignees: []
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      multiple: true
+      options:
+        - N/A
+        - Academy (course map, lesson pages, progress)
+        - Game (feauxbernetes)
+        - Engine (@sra/engine)
+        - Course content (lessons, briefs, checklists)
+        - Labs and simulations
+        - CI / tooling
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: epic-description
+    attributes:
+      label: What does this epic deliver?
+      description: The outcome, the part of the spec it covers, and what done looks like.
+    validations:
+      required: true

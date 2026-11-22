@@ -15,4 +15,8 @@ test-results
 .idea
 .vscode/*
 !.vscode/extensions.json
-.claude/
+!.vscode/settings.json
+
+## Claude Code workspace (the shared settings are committed; everything else is per-developer)
+.claude/*
+!.claude/settings.json

@@ -180,7 +180,7 @@ describe('a lesson', () => {
 })
 
 describe('the progress page', () => {
-  it('summarises progress per track', async () => {
+  it('summarizes progress per track', async () => {
     const { store } = renderAt('#/progress')
     expect(screen.getByText(/Practitioner:/).parentElement).toHaveTextContent('0 of 4 lessons')
     store.update((p) => ({

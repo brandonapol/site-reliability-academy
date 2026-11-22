@@ -71,7 +71,7 @@ export const EVERYONE: Track = {
         module(
           5,
           'Launch or fix?',
-          'Play product owner across a quarter of trade-offs, with a policy to honour',
+          'Play product owner across a quarter of trade-offs, with a policy to honor',
           'The error budget policy, and why it removes the argument'
         ),
         module(

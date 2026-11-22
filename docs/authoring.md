@@ -62,7 +62,7 @@ Every lesson page has the same four parts:
   follow the template from the video epic (#2): the one thing the viewer should be able to say
   afterwards, an opening hook (usually a real incident, linked), three or four beats with the
   diagram each needs, and the line that hands off to the exercise. **Videos carry concepts,
-  stories and judgement. Never tool walkthroughs or the academy's own screens.** Those go in the
+  stories and judgment. Never tool walkthroughs or the academy's own screens.** Those go in the
   lesson text, where they can be edited when a tool changes.
 - **Do:** the interactive part. `kind: 'game'` plays feauxbernetes chapters on `play.html`.
   `kind: 'text'` describes an activity that has no player yet. New kinds (simulations, local labs)
@@ -90,9 +90,9 @@ the DOM, and lint enforces that.
 | --- | --- |
 | _Site Reliability Engineering_ and _The Site Reliability Workbook_ (sre.google) | **Link only.** Assign chapters as reading. Never quote at length, reproduce or adapt them: they're CC BY-NC-ND. Write original lessons. |
 | SRE Classroom: The Art of SLOs, ImageServer, PubSub | **May be adapted, with credit to Google** (CC BY 4.0). Say what was adapted and link the original. |
-| Anything marked "check before reuse" in [`curriculum.md`](./curriculum.md) section 9 | Check the licence first and record the result in that table before using it. Until then, link only. |
+| Anything marked "check before reuse" in [`curriculum.md`](./curriculum.md) section 9 | Check the license first and record the result in that table before using it. Until then, link only. |
 
-The same applies to images and diagrams: draw your own, or use ones whose licence allows it and
+The same applies to images and diagrams: draw your own, or use ones whose license allows it and
 credit them.
 
 ## Style

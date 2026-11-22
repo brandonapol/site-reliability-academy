@@ -35,13 +35,13 @@ export const AI_POLICY: Record<PolicyNotice, PolicyText> = {
   'ai-policy-flip': {
     title: 'Weeks 27–28: AI on, deliberately',
     paragraphs: [
-      'From week 27 you design your own AI SRE agent and test it against incidents you already understand. Judgement stays with you: you approve anything it changes, and you are accountable for what it concludes.',
+      'From week 27 you design your own AI SRE agent and test it against incidents you already understand. Judgment stays with you: you approve anything it changes, and you are accountable for what it concludes.',
     ],
   },
   'ai-policy-everyone': {
     title: 'A note on AI assistants',
     paragraphs: [
-      'This track is about judgement: deciding what to measure, when to launch, what to say in an incident. Try making those calls yourself before asking an AI assistant. Module 9 looks at what AI is good and bad at in incident response.',
+      'This track is about judgment: deciding what to measure, when to launch, what to say in an incident. Try making those calls yourself before asking an AI assistant. Module 9 looks at what AI is good and bad at in incident response.',
     ],
   },
 }
