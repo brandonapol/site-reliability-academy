@@ -1,5 +1,5 @@
-import type { Wish } from '../../engine/cluster'
-import type { GitOpsState, PullRequest } from '../../engine/gitops'
+import type { Wish } from '@sra/engine/cluster'
+import type { GitOpsState, PullRequest } from '@sra/engine/gitops'
 
 export const ORG = 'inkwell'
 export const DEPLOY_REPO = 'deploy'

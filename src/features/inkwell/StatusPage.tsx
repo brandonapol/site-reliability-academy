@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-import type { StatusComponentId, StatusComponentState } from '../../engine/game'
+import type { StatusComponentId, StatusComponentState } from '@sra/engine/game'
 import { useGame } from '../../store'
 import styles from './StatusPage.module.css'
 import { componentState, STATUS_COMPONENT_LABEL, STATUS_COMPONENTS } from './site'

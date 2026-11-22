@@ -1,4 +1,4 @@
-import type { Chapter } from '../../engine/story/types'
+import type { Chapter } from '@sra/engine/story/types'
 
 /**
  * Whether the learner is on call themselves, for the on-call brain's label (planning.md → "The

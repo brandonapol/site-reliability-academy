@@ -1,6 +1,6 @@
 import { CHANNELS } from '../../content/channels'
-import type { Tab } from '../../engine/events'
-import type { Action, GameState } from '../../engine/game'
+import type { Tab } from '@sra/engine/events'
+import type { Action, GameState } from '@sra/engine/game'
 import { labelForTab } from '../browser/tabs'
 
 /**

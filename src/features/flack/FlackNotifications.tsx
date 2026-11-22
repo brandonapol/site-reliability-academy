@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import type { FlackMessage } from '../../engine/game'
+import type { FlackMessage } from '@sra/engine/game'
 import { useGame } from '../../store'
 import { Avatar } from '../shared/Avatar'
 import styles from './FlackNotifications.module.css'

@@ -1,4 +1,4 @@
-import type { Copy } from '../../engine/cluster'
+import type { Copy } from '@sra/engine/cluster'
 import styles from './AppView.module.css'
 
 /**

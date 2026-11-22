@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { setWish as setClusterWish } from '../engine/cluster'
-import { approvePR, createGitOps, mergePR, openPR, DEPLOY_REPO } from '../engine/gitops'
-import { T0, toyConfig } from '../engine/story/__fixtures__/toyChapter'
+import { setWish as setClusterWish } from '@sra/engine/cluster'
+import { approvePR, createGitOps, mergePR, openPR, DEPLOY_REPO } from '@sra/engine/gitops'
+import { T0, toyConfig } from '@sra/engine/story/__fixtures__/toyChapter'
 import {
   createGameStore,
   FAST_CLOCK_FACTOR,

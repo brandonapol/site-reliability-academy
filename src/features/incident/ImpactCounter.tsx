@@ -1,4 +1,4 @@
-import type { Incident } from '../../engine/incident'
+import type { Incident } from '@sra/engine/incident'
 import styles from './Incident.module.css'
 import { useImpactModel } from './useIncident'
 

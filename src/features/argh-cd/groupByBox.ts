@@ -1,4 +1,4 @@
-import type { Box } from '../../engine/cluster'
+import type { Box } from '@sra/engine/cluster'
 import type { AnimatedCopy } from './useAnimatedCopies'
 
 export interface BoxGroup {

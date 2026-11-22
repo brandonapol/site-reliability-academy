@@ -1,4 +1,4 @@
-import { CH8_RULES } from '../../engine/telemetry/__fixtures__/billingWeek'
+import { CH8_RULES } from '@sra/engine/telemetry/__fixtures__/billingWeek'
 import styles from './Grafauxna.module.css'
 
 function describe(rule: (typeof CH8_RULES)[number]): string {

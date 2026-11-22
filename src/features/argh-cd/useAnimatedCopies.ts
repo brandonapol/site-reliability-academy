@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import type { Copy } from '../../engine/cluster'
+import type { Copy } from '@sra/engine/cluster'
 
 export interface AnimatedCopy {
   copy: Copy

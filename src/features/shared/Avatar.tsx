@@ -1,4 +1,4 @@
-import type { Character } from '../../engine/story/types'
+import type { Character } from '@sra/engine/story/types'
 import styles from './Avatar.module.css'
 import { initialsOf } from './initials'
 

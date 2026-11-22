@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
-import type { Action } from '../../engine/game'
+import type { Action } from '@sra/engine/game'
 import {
   describeSolution,
   findShowMeTarget,

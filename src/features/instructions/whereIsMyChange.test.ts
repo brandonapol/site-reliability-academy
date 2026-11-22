@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { createCluster, setWish, type ClusterState, type Copy } from '../../engine/cluster'
-import { createCiState, schedulePipeline } from '../../engine/ci'
-import { approvePR, createGitOps, mergePR, openPR, setPRChecks } from '../../engine/gitops'
+import { createCluster, setWish, type ClusterState, type Copy } from '@sra/engine/cluster'
+import { createCiState, schedulePipeline } from '@sra/engine/ci'
+import { approvePR, createGitOps, mergePR, openPR, setPRChecks } from '@sra/engine/gitops'
 import {
   activeChange,
   boxState,

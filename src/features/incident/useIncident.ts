@@ -1,4 +1,4 @@
-import type { Incident, ImpactModel } from '../../engine/incident'
+import type { Incident, ImpactModel } from '@sra/engine/incident'
 import { useGame } from '../../store'
 
 /** The current (or most recently resolved) incident, if there's ever been one. */

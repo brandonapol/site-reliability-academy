@@ -1,10 +1,10 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import type { ClusterState } from '../../engine/cluster'
-import { createCluster, setWish } from '../../engine/cluster'
-import { approvePR, createGitOps, mergePR, openPR } from '../../engine/gitops'
-import type { GameConfig } from '../../engine/story/types'
+import type { ClusterState } from '@sra/engine/cluster'
+import { createCluster, setWish } from '@sra/engine/cluster'
+import { approvePR, createGitOps, mergePR, openPR } from '@sra/engine/gitops'
+import type { GameConfig } from '@sra/engine/story/types'
 import { createGameStore, GameStoreProvider, type StorageLike } from '../../store'
 import { WhereIsMyChange } from './WhereIsMyChange'
 

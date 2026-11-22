@@ -2,7 +2,7 @@ import { act, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
-import { SIGNUP_BUG_BEHAVIOUR } from '../../engine/ci/__fixtures__/webE2eSuite'
+import { SIGNUP_BUG_BEHAVIOUR } from '@sra/engine/ci/__fixtures__/webE2eSuite'
 import { renderGitNub } from './__fixtures__/renderGitNub'
 
 describe('GitNub', () => {

@@ -1,4 +1,4 @@
-import type { MentorEntry } from '../engine/story/types'
+import type { MentorEntry } from '@sra/engine/story/types'
 import { DOCS } from './docsLinks'
 
 /**

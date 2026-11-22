@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { STATUS_STAGES, statusStageLabel, type StatusStage } from '../../engine/incident'
+import { STATUS_STAGES, statusStageLabel, type StatusStage } from '@sra/engine/incident'
 import { useDispatch, useGame } from '../../store'
 import styles from './Incident.module.css'
 import { useIncident } from './useIncident'

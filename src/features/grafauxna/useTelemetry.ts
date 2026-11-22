@@ -1,5 +1,5 @@
-import { createTelemetry, type Scenario } from '../../engine/telemetry'
-import { versionAt, versionBehaviour } from '../../engine/cluster'
+import { createTelemetry, type Scenario } from '@sra/engine/telemetry'
+import { versionAt, versionBehaviour } from '@sra/engine/cluster'
 import { useGame } from '../../store'
 
 const SEED = 6

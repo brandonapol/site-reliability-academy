@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { currentChapter, currentStep, shouldPulseHint } from '../../engine/story/runner'
-import { interpolate } from '../../engine/story/template'
+import { currentChapter, currentStep, shouldPulseHint } from '@sra/engine/story/runner'
+import { interpolate } from '@sra/engine/story/template'
 import { useDispatch, useGame } from '../../store'
 import { Markdown } from '../shared/Markdown'
 import { ConfirmButton } from './ConfirmButton'

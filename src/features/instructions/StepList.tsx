@@ -1,4 +1,4 @@
-import type { Step } from '../../engine/story/types'
+import type { Step } from '@sra/engine/story/types'
 import styles from './Instructions.module.css'
 
 interface StepListProps {

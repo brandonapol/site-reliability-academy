@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { formatRealLog, formatReport, type Job, type Pipeline } from '../../engine/ci'
+import { formatRealLog, formatReport, type Job, type Pipeline } from '@sra/engine/ci'
 import { useDispatch } from '../../store'
 import styles from './GitNub.module.css'
 
