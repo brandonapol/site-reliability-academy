@@ -1,0 +1,34 @@
+name: Feature Request
+description: Request a new feature, lesson or change.
+title: 'feat: '
+labels: ['enhancement']
+assignees: []
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: What would this apply to?
+      multiple: true
+      options:
+        - N/A
+        - Academy (course map, lesson pages, progress)
+        - Game (feauxbernetes)
+        - Engine (@sra/engine)
+        - Course content (lessons, briefs, checklists)
+        - Labs and simulations
+        - CI / tooling
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What do you want?
+      description: You can also ask for something to be removed.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra info
+      description: Links, screenshots, the part of docs/curriculum.md this comes from.

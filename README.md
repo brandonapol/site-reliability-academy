@@ -24,29 +24,33 @@ history. Its design notes are in
 ## Running it
 
 ```sh
-npm ci
-npm run dev
+make setup   # npm ci, Playwright's Chromium, and the git hooks
+make serve   # Vite dev server
 ```
 
-CI uses **Node 24**, set in `.nvmrc` (`nvm use`). The first time you run `npm run e2e`, install
-its browser with `npx playwright install chromium`. The academy is `index.html` and the game is `play.html`. Add `?fast=1` to the game's URL to shrink
-every scripted delay a hundredfold (the E2E tests do).
+GNU make is required (on macOS, `brew install make` and use `gmake`). CI uses **Node 24**, set in
+`.nvmrc` (`make setup/node`, or `nvm use`). The academy is `index.html` and the game is
+`play.html`. Add `?fast=1` to the game's URL to shrink every scripted delay a hundredfold (the E2E
+tests do).
 
 Builds use the base path `/site-reliability-academy/`. To host the site somewhere else, set
-`BASE_PATH` (`BASE_PATH=/ npm run build`). Routes live in the URL hash, so deep links work on any
+`BASE_PATH` (`BASE_PATH=/ make build`). Routes live in the URL hash, so deep links work on any
 static host.
 
-| Script               | What it does                              |
-| -------------------- | ----------------------------------------- |
-| `npm run dev`        | Vite dev server                           |
-| `npm run build`      | Typecheck and build to `dist/`            |
-| `npm run preview`    | Serve the built site                      |
-| `npm run lint`       | ESLint                                    |
-| `npm run typecheck`  | TypeScript, no emit                       |
-| `npm test`           | Vitest once (engine in Node, UI in jsdom) |
-| `npm run test:watch` | Vitest in watch mode                      |
-| `npm run format`     | Prettier                                  |
-| `npm run e2e`        | Playwright playthrough against the build  |
+`make help` lists every target. These are the ones that matter day to day:
+
+| Target            | What it does                                              |
+| ----------------- | --------------------------------------------------------- |
+| `make serve`      | Vite dev server                                           |
+| `make build`      | Type-check and build to `dist/`                           |
+| `make check`      | The gate: Prettier, ESLint, types, spelling, unit tests   |
+| `make check/fast` | Prettier and cspell on staged files (the pre-commit hook) |
+| `make test/unit`  | Vitest once (engine in Node, UI in jsdom)                 |
+| `make test/e2e`   | Playwright playthrough against the build                  |
+| `make fix`        | ESLint autofix, then Prettier                             |
+
+Contributing: see [`CONTRIBUTING.md`](./CONTRIBUTING.md). Coding agents read
+[`AGENTS.md`](./AGENTS.md).
 
 ## How the code is laid out
 

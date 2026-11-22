@@ -52,7 +52,9 @@ export const databaseUpgradeChapter: Chapter = {
       ],
       solution: { type: 'chooseOption', stepId: 'stages', optionId: 'remembers' },
       goal: (_state, event) =>
-        event.type === 'optionChosen' && event.stepId === 'stages' && event.optionId === 'remembers',
+        event.type === 'optionChosen' &&
+        event.stepId === 'stages' &&
+        event.optionId === 'remembers',
       wrongAnswers: {
         slow: 'Kai: "Start time isn’t the point. The data is unique. Copies of web are identical and replaceable."',
       },

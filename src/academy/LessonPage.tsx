@@ -1,7 +1,7 @@
 import { useEffect, useId } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 
-import { COURSE, findLesson, neighbours, placementFor, type Lesson, type TrackId } from '../course'
+import { COURSE, findLesson, neighbors, placementFor, type Lesson, type TrackId } from '../course'
 import { Markdown } from '../features/shared/Markdown'
 import { setChecked, setComplete, visitLesson } from '../progress/progress'
 import { lessonHref, playHref } from './links'
@@ -28,7 +28,7 @@ export function LessonPage() {
   if (!lesson || !placement) return <NotFound />
 
   const { track, phase, unit } = placement
-  const { previous, next } = neighbours(track, lesson.id)
+  const { previous, next } = neighbors(track, lesson.id)
   const record = progress.lessons[lesson.id]
   const checked = new Set(record?.checked ?? [])
   const complete = Boolean(record?.completedAt)

@@ -1,0 +1,52 @@
+name: Bug Report
+description: Something in the academy or the game doesn't work.
+title: 'fix: '
+labels: ['bug']
+assignees: []
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: What is affected?
+      multiple: true
+      options:
+        - N/A
+        - Academy (course map, lesson pages, progress)
+        - Game (feauxbernetes)
+        - Engine (@sra/engine)
+        - Course content (lessons, briefs, checklists)
+        - Labs and simulations
+        - CI / tooling
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also, what did you expect to happen?
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: The page it happened on, including the part after `#` (for example `#/lesson/inkwell-boxes`).
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browsers
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+        - Other
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output
+      description: Anything in the browser console. This is formatted as code, so no backticks needed.
+      render: shell
