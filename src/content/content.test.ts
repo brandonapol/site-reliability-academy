@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { Chapter } from '../engine/story/types'
+import type { Chapter } from '@sra/engine/story/types'
 import { CHAPTERS } from './chapters'
 import { CHANNELS, incidentChannel, incidentChannelId } from './channels'
 import { characters } from './characters'

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import type { Tab } from '../../engine/events'
+import type { Tab } from '@sra/engine/events'
 import { useGame } from '../../store'
 import { pathForTab } from './tabs'
 

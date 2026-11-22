@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router'
 
-import { health, summary } from '../../engine/cluster'
-import { appSyncStatus } from '../../engine/gitops'
+import { health, summary } from '@sra/engine/cluster'
+import { appSyncStatus } from '@sra/engine/gitops'
 import { SERVICES } from '../../content'
 import { useGame } from '../../store'
 import styles from './AppView.module.css'

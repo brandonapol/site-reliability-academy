@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-import { DEPLOY_REPO } from '../../engine/gitops'
+import { DEPLOY_REPO } from '@sra/engine/gitops'
 import { useGame } from '../../store'
 import { relativeTime } from '../shared/time'
 import { APP_REPOS, ORG, repoDescription, repoPath } from './data'

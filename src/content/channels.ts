@@ -1,4 +1,4 @@
-import type { Channel } from '../engine/story/types'
+import type { Channel } from '@sra/engine/story/types'
 
 /**
  * Flack's static channels and DMs (planning.md → "Flack (#12)"): the whole team in `#platform`,

@@ -1,4 +1,4 @@
-import type { Copy } from '../../engine/cluster'
+import type { Copy } from '@sra/engine/cluster'
 
 /**
  * A stable ordinal for one copy among its own app's copies (including a "leaving" ghost still on

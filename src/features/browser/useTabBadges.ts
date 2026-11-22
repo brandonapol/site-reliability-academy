@@ -1,4 +1,4 @@
-import type { Tab } from '../../engine/events'
+import type { Tab } from '@sra/engine/events'
 import { useGame } from '../../store'
 
 /**

@@ -1,6 +1,6 @@
-import { createCluster } from '../../engine/cluster'
-import type { Chapter } from '../../engine/story/types'
-import { createGitOps } from '../../engine/gitops'
+import { createCluster } from '@sra/engine/cluster'
+import type { Chapter } from '@sra/engine/story/types'
+import { createGitOps } from '@sra/engine/gitops'
 import { STARTING_CLUSTER_SPEC, STARTING_GITOPS_SPEC, STARTING_WISHES } from '../world'
 
 export const orderFormChapter: Chapter = {

@@ -1,5 +1,5 @@
-import type { AppHealth, AppSummary, CopyState, DatabaseHealth } from '../../engine/cluster'
-import type { SyncStatus } from '../../engine/gitops'
+import type { AppHealth, AppSummary, CopyState, DatabaseHealth } from '@sra/engine/cluster'
+import type { SyncStatus } from '@sra/engine/gitops'
 
 /**
  * Icon-plus-text for every health and copy state Argh CD shows. Nothing here is colour-coded —

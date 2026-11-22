@@ -1,4 +1,4 @@
-import type { Character } from '../engine/story/types'
+import type { Character } from '@sra/engine/story/types'
 
 // The cast, as introduced in planning.md → "Story, world and characters". They/them or names
 // only in all copy — never he/she (see content.test.ts).

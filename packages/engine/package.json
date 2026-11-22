@@ -1,0 +1,7 @@
+{
+  "name": "@sra/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The academy's simulation engine: pure TypeScript, no React, no DOM. Imported by subpath, e.g. @sra/engine/game or @sra/engine/story/types."
+}

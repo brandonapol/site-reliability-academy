@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 
-import { health, summary, type ClusterState } from '../../engine/cluster'
-import { appSyncStatus, type GitOpsState } from '../../engine/gitops'
+import { health, summary, type ClusterState } from '@sra/engine/cluster'
+import { appSyncStatus, type GitOpsState } from '@sra/engine/gitops'
 import { SERVICES, type ServiceInfo } from '../../content'
 import { useDispatch, useGame } from '../../store'
 import styles from './Applications.module.css'

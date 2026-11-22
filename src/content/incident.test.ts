@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { STATUS_STAGES } from '../engine/incident'
+import { STATUS_STAGES } from '@sra/engine/incident'
 import { characters } from './characters'
 import { INCIDENT_CONTENT } from './incident'
 import { SERVICES } from './world'

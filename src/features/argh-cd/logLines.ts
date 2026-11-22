@@ -1,4 +1,4 @@
-import type { ClusterEvent } from '../../engine/cluster'
+import type { ClusterEvent } from '@sra/engine/cluster'
 
 /**
  * The copy drawer's "last few English log lines": the cluster's own event feed (see

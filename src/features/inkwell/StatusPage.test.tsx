@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
 import { createGameConfig } from '../../content'
-import type { Copy } from '../../engine/cluster'
+import type { Copy } from '@sra/engine/cluster'
 import { createGameStore, GameStoreProvider, type GameStore, type StorageLike } from '../../store'
 import { Inkwell } from './Inkwell'
 

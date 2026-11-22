@@ -16,7 +16,7 @@ export default defineConfig(({ command, isPreview }) => ({
         test: {
           name: 'engine',
           environment: 'node',
-          include: ['src/engine/**/*.test.ts', 'src/content/**/*.test.ts'],
+          include: ['packages/engine/**/*.test.ts', 'src/content/**/*.test.ts'],
         },
       },
       {

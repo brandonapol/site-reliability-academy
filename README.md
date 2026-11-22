@@ -47,13 +47,15 @@ static host.
 ## How the code is laid out
 
 ```
-src/engine/{cluster,gitops,ci,telemetry,incident,story,testlab}
-                               the simulation: pure TypeScript, no React, no DOM
+packages/engine/{cluster,gitops,ci,telemetry,incident,story,testlab}
+                               @sra/engine, the simulation: pure TypeScript, no React,
+                               no DOM. Imported by subpath (@sra/engine/game)
 src/content                    the game world: chapters, characters, glossary, docs links
 src/store                      Zustand store, clock, persistence
 src/features/*                 the game's UI panels (Flack, GitNub, Argh CD, Ops Console, …)
 e2e/                           Playwright specs
 ```
 
-`src/engine/**` and `src/content/**` may not import React, or anything from `src/features` or
-`src/store`. A lint rule enforces this, so the simulation can be tested without a browser.
+`packages/engine` may not import React, Zustand or anything under `src/`. `src/content` may not
+import React, or anything from `src/features` or `src/store`. Lint rules enforce both, so the
+simulation can be tested without a browser.

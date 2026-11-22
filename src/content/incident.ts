@@ -1,4 +1,4 @@
-import type { IncidentContent } from '../engine/incident/types'
+import type { IncidentContent } from '@sra/engine/incident/types'
 
 const MINUTE = 60_000
 

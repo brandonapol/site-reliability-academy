@@ -1,4 +1,4 @@
-import type { Action } from '../engine/game'
+import type { Action } from '@sra/engine/game'
 
 export interface FixDiffLine {
   text: string

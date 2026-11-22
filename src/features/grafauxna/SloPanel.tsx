@@ -4,8 +4,8 @@ import {
   burnRate,
   describeAllowedOutage,
   humanDuration,
-} from '../../engine/telemetry'
-import { CH8_SLO } from '../../engine/telemetry/__fixtures__/billingWeek'
+} from '@sra/engine/telemetry'
+import { CH8_SLO } from '@sra/engine/telemetry/__fixtures__/billingWeek'
 import styles from './Grafauxna.module.css'
 
 /** Placeholder live counts until Ch 7 wires real traffic. Quiet day: almost all checkouts succeed. */

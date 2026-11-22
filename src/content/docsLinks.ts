@@ -1,4 +1,4 @@
-import type { DocsLink } from '../engine/story/types'
+import type { DocsLink } from '@sra/engine/story/types'
 
 /**
  * Every "in real life" link in the game lives here, so there's one place to fix a moved page.

@@ -1,4 +1,4 @@
-import type { Copy } from '../../engine/cluster'
+import type { Copy } from '@sra/engine/cluster'
 import { useDispatch } from '../../store'
 import { COPY_STATE_DISPLAY } from './display'
 import styles from './CopyChip.module.css'

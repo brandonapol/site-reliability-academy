@@ -7,8 +7,8 @@ import {
   STEP_MS,
   WEEK_END,
   WEEK_START,
-} from '../../engine/telemetry/__fixtures__/billingWeek'
-import { replay, series } from '../../engine/telemetry'
+} from '@sra/engine/telemetry/__fixtures__/billingWeek'
+import { replay, series } from '@sra/engine/telemetry'
 import styles from './Grafauxna.module.css'
 
 export function Replay() {

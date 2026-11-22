@@ -4,7 +4,7 @@ import {
   type ClusterState,
   type Copy,
   type DatabaseHealth,
-} from '../../engine/cluster'
+} from '@sra/engine/cluster'
 
 /** "A", "A and B", or "A, B and D" — the join every summary sentence below uses for a list of
  * box names. */
