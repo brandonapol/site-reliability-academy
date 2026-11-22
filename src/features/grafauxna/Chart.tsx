@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { SeriesPoint } from '../../engine/telemetry'
+import type { SeriesPoint } from '@sra/engine/telemetry'
 import styles from './Grafauxna.module.css'
 
 export function Chart({

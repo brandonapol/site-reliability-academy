@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { playChapter, playChapterRecoverably } from '../../engine/story/harness'
+import { playChapter, playChapterRecoverably } from '@sra/engine/story/harness'
 import { createGameConfig } from '../config'
 
 const config = createGameConfig()

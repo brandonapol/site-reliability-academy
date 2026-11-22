@@ -1,6 +1,6 @@
-import type { ClusterState } from '../../engine/cluster'
-import { pipelineForPR, pipelineStatus, type CiState } from '../../engine/ci'
-import { appSyncStatus, type GitOpsState, type PullRequest } from '../../engine/gitops'
+import type { ClusterState } from '@sra/engine/cluster'
+import { pipelineForPR, pipelineStatus, type CiState } from '@sra/engine/ci'
+import { appSyncStatus, type GitOpsState, type PullRequest } from '@sra/engine/gitops'
 
 /**
  * Where a change is between GitNub and the cluster (planning.md → "Instructions (#11)"): PR opened

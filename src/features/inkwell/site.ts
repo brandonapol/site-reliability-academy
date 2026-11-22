@@ -1,5 +1,5 @@
-import { summary, versionBehaviour, type ClusterState } from '../../engine/cluster'
-import type { StatusComponentId, StatusComponentState, StatusUpdate } from '../../engine/game'
+import { summary, versionBehaviour, type ClusterState } from '@sra/engine/cluster'
+import type { StatusComponentId, StatusComponentState, StatusUpdate } from '@sra/engine/game'
 
 /**
  * Pure helpers that turn cluster state into what a customer would actually see on

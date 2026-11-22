@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { VERSION_BEHAVIOUR } from '../../content/world'
-import { createCluster, type ClusterState, type Copy } from '../../engine/cluster'
-import type { StatusUpdate } from '../../engine/game'
+import { createCluster, type ClusterState, type Copy } from '@sra/engine/cluster'
+import type { StatusUpdate } from '@sra/engine/game'
 import {
   componentState,
   COUPON_CODE,

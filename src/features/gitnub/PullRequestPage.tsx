@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 
-import { pipelineForPR } from '../../engine/ci'
+import { pipelineForPR } from '@sra/engine/ci'
 import { useDispatch, useGame } from '../../store'
 import { Avatar } from '../shared/Avatar'
 import { relativeTime } from '../shared/time'

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import type { Channel } from '../../engine/story/types'
+import type { Channel } from '@sra/engine/story/types'
 import { useGame } from '../../store'
 
 /**

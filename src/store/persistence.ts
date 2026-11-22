@@ -1,5 +1,5 @@
-import { GAME_STATE_VERSION, type GameState } from '../engine/game'
-import type { Effect } from '../engine/story/types'
+import { GAME_STATE_VERSION, type GameState } from '@sra/engine/game'
+import type { Effect } from '@sra/engine/story/types'
 
 export const STORAGE_KEY = 'feauxbernetes:v1'
 

@@ -8,8 +8,8 @@ import {
   type Action,
   type GameState,
   type ReduceResult,
-} from '../engine/game'
-import type { Effect, GameConfig } from '../engine/story/types'
+} from '@sra/engine/game'
+import type { Effect, GameConfig } from '@sra/engine/story/types'
 import {
   browserStorage,
   clearSave,

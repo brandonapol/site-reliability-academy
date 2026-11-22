@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 
-import { currentStep } from '../../engine/story'
-import type { WishOption } from '../../engine/story/types'
+import { currentStep } from '@sra/engine/story'
+import type { WishOption } from '@sra/engine/story/types'
 import { useDispatch, useGame } from '../../store'
 import { targetIdFor } from '../instructions/showMe'
 import styles from './WishPanel.module.css'

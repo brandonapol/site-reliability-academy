@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   brokenBillingState,
   incidentConfig,
-} from '../../engine/incident/__fixtures__/incidentConfig'
-import type { IncidentCommand } from '../../engine/incident'
+} from '@sra/engine/incident/__fixtures__/incidentConfig'
+import type { IncidentCommand } from '@sra/engine/incident'
 import {
   createGameStore,
   GameStoreProvider,

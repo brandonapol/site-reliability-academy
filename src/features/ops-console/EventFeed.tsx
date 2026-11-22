@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
-import { currentChapter } from '../../engine/story'
+import { currentChapter } from '@sra/engine/story'
 import { useGame } from '../../store'
 import { buildFeed, type FeedCategory } from './feed'
 import styles from './EventFeed.module.css'

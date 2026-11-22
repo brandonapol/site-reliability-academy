@@ -1,6 +1,6 @@
-import type { ClusterEvent } from '../../engine/cluster'
-import type { CiNotice } from '../../engine/game'
-import type { GitOpsEvent } from '../../engine/gitops'
+import type { ClusterEvent } from '@sra/engine/cluster'
+import type { CiNotice } from '@sra/engine/game'
+import type { GitOpsEvent } from '@sra/engine/gitops'
 
 /**
  * The three sources the "What's happening" feed draws from, and what each filter chip narrows to

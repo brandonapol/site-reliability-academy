@@ -1,4 +1,4 @@
-import { appSyncStatus, diffInEnglish, type SyncHistoryEntry } from '../../engine/gitops'
+import { appSyncStatus, diffInEnglish, type SyncHistoryEntry } from '@sra/engine/gitops'
 import { useDispatch, useGame } from '../../store'
 import styles from './AppView.module.css'
 import { upForText } from './duration'

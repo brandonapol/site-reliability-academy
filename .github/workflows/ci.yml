@@ -58,3 +58,46 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 7
+
+  # Publishes the site to GitHub Pages (#46) once every check above has passed on `main`. Pull
+  # requests run the checks but never deploy. One-time setup: Settings → Pages → Source: GitHub
+  # Actions.
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [check, e2e]
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # Builds both pages (index.html and play.html) under /site-reliability-academy/, the
+      # project-site path; set BASE_PATH here to deploy somewhere else.
+      - run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

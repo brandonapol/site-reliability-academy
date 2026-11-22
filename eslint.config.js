@@ -5,7 +5,10 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 const purityMessage =
-  'The simulation must stay framework-free: src/engine and src/content may not import React or reach into src/features or src/store.'
+  'Content and course data must stay framework-free: src/content, src/course and the progress model may not import React or reach into src/features or src/store.'
+
+const enginePurityMessage =
+  'packages/engine is the framework-free simulation the whole site builds on: it may not import React, Zustand or anything from src/.'
 
 export default tseslint.config(
   { ignores: ['dist', 'coverage', 'node_modules', 'playwright-report', 'test-results'] },
@@ -20,12 +23,35 @@ export default tseslint.config(
   },
 
   {
-    files: ['src/features/**/*.{ts,tsx}'],
+    files: ['src/features/**/*.{ts,tsx}', 'src/academy/**/*.{ts,tsx}', 'src/play/**/*.{ts,tsx}'],
     extends: [reactHooks.configs.flat['recommended-latest'], reactRefresh.configs.vite],
   },
 
   {
-    files: ['src/engine/**/*.{ts,tsx}', 'src/content/**/*.{ts,tsx}'],
+    files: ['packages/engine/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            { name: 'react', message: enginePurityMessage },
+            { name: 'react-dom', message: enginePurityMessage },
+            { name: 'react-dom/client', message: enginePurityMessage },
+            { name: 'zustand', message: enginePurityMessage },
+          ],
+          patterns: [
+            {
+              group: ['**/src/**', '**/features/**', '**/store/**', '**/content/**'],
+              message: enginePurityMessage,
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  {
+    files: ['src/content/**/*.{ts,tsx}', 'src/course/**/*.{ts,tsx}', 'src/progress/progress.ts'],
     rules: {
       'no-restricted-imports': [
         'error',

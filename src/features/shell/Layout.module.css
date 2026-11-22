@@ -1,7 +1,9 @@
 .layout {
   display: grid;
   grid-template-columns: minmax(280px, 24fr) minmax(480px, 52fr) minmax(280px, 24fr);
-  height: 100vh;
+  /* The lesson bar (src/play/LessonBar.tsx) sets --lesson-bar-height when the game is opened from a
+     lesson; it is 0 otherwise. */
+  height: calc(100vh - var(--lesson-bar-height, 0px));
   overflow: hidden;
 }
 

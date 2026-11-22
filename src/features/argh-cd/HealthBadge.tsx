@@ -1,4 +1,4 @@
-import type { AppHealth, DatabaseHealth } from '../../engine/cluster'
+import type { AppHealth, DatabaseHealth } from '@sra/engine/cluster'
 import { HEALTH_DISPLAY } from './display'
 import styles from './HealthBadge.module.css'
 

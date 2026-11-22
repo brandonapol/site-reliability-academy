@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
 
-import type { FlackMessage } from '../../engine/game'
-import type { BotCard, Character } from '../../engine/story/types'
+import type { FlackMessage } from '@sra/engine/game'
+import type { BotCard, Character } from '@sra/engine/story/types'
 import { useGame } from '../../store'
 import { Avatar } from '../shared/Avatar'
 import { Markdown } from '../shared/Markdown'

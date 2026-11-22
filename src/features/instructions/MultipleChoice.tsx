@@ -1,4 +1,4 @@
-import type { ChooseOptionChoice } from '../../engine/story/types'
+import type { ChooseOptionChoice } from '@sra/engine/story/types'
 import { useDispatch } from '../../store'
 import { Markdown } from '../shared/Markdown'
 import styles from './Instructions.module.css'

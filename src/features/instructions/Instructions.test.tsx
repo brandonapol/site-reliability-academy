@@ -1,8 +1,8 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import type { Action } from '../../engine/game'
-import type { GameConfig } from '../../engine/story/types'
+import type { Action } from '@sra/engine/game'
+import type { GameConfig } from '@sra/engine/story/types'
 import { createGameStore, GameStoreProvider, type GameStore, type StorageLike } from '../../store'
 import { Instructions } from './Instructions'
 import { InstructionsText } from './InstructionsText'

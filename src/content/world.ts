@@ -1,5 +1,5 @@
-import type { Box, ClusterConfig, ClusterSpec, Database, Wish } from '../engine/cluster'
-import type { AppRepo, GitOpsSpec } from '../engine/gitops'
+import type { Box, ClusterConfig, ClusterSpec, Database, Wish } from '@sra/engine/cluster'
+import type { AppRepo, GitOpsSpec } from '@sra/engine/gitops'
 
 /** Monday 14 September 2026, 09:00 UTC: the learner's first day. */
 export const WORLD_START = Date.UTC(2026, 8, 14, 9, 0, 0) / 1000

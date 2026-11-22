@@ -1,4 +1,4 @@
-import { formatDuration, scorecard, type Incident, type ScoreRow } from '../../engine/incident'
+import { formatDuration, scorecard, type Incident, type ScoreRow } from '@sra/engine/incident'
 import { useGame } from '../../store'
 import styles from './Incident.module.css'
 

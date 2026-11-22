@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { currentChapter } from '../../engine/story/runner'
+import { currentChapter } from '@sra/engine/story/runner'
 import { useGame } from '../../store'
 import styles from './Flack.module.css'
 

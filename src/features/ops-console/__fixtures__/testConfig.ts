@@ -1,4 +1,4 @@
-import type { Chapter, GameConfig, WishOption } from '../../../engine/story/types'
+import type { Chapter, GameConfig, WishOption } from '@sra/engine/story/types'
 
 /** A normal wish: bumping `search` from 3 to 5 copies. */
 export const SCALE_SEARCH: WishOption = {

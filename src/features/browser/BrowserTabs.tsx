@@ -1,7 +1,7 @@
 import { useRef, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router'
 
-import type { Tab } from '../../engine/events'
+import type { Tab } from '@sra/engine/events'
 import { useGame } from '../../store'
 import styles from './BrowserTabs.module.css'
 import { TABS } from './tabs'

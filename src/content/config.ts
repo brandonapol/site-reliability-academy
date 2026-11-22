@@ -1,4 +1,4 @@
-import type { GameConfig } from '../engine/story/types'
+import type { GameConfig } from '@sra/engine/story/types'
 import { CHANNELS, DEFAULT_CHANNEL, MENTOR_CHANNEL } from './channels'
 import { CHAPTERS } from './chapters'
 import { characters } from './characters'

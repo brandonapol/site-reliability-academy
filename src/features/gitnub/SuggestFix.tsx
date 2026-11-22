@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { suggestFixesFor, type SuggestFixOption } from '../../content'
-import type { Pipeline } from '../../engine/ci'
+import type { Pipeline } from '@sra/engine/ci'
 import { useDispatch } from '../../store'
 import styles from './GitNub.module.css'
 

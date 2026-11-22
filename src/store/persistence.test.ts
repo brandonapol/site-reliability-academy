@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { GAME_STATE_VERSION, blankState, type GameState } from '../engine/game'
-import { toyConfig } from '../engine/story/__fixtures__/toyChapter'
+import { GAME_STATE_VERSION, blankState, type GameState } from '@sra/engine/game'
+import { toyConfig } from '@sra/engine/story/__fixtures__/toyChapter'
 import {
   MAX_SAVED_CI_NOTICES,
   MAX_SAVED_CLUSTER_EVENTS,

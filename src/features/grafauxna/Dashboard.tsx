@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import type { Signal } from '../../engine/telemetry'
+import type { Signal } from '@sra/engine/telemetry'
 import { SERVICES } from '../../content'
 import { useGame } from '../../store'
 import { Chart } from './Chart'

@@ -1,5 +1,5 @@
-import { DEPLOY_REPO } from '../../engine/gitops'
-import type { Chapter } from '../../engine/story/types'
+import { DEPLOY_REPO } from '@sra/engine/gitops'
+import type { Chapter } from '@sra/engine/story/types'
 import { DOCS } from '../docsLinks'
 import { startingWorld } from './helpers'
 

@@ -1,4 +1,4 @@
-import type { TestSuite } from '../engine/ci'
+import type { TestSuite } from '@sra/engine/ci'
 
 /**
  * End-to-end suites keyed by app. GitNub looks these up via `GameConfig.testSuites` when it

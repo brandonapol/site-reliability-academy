@@ -1,4 +1,4 @@
-import type { SyncStatus } from '../../engine/gitops'
+import type { SyncStatus } from '@sra/engine/gitops'
 import { SYNC_DISPLAY } from './display'
 import styles from './HealthBadge.module.css'
 

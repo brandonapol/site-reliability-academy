@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import type { Copy } from '../../engine/cluster'
+import type { Copy } from '@sra/engine/cluster'
 import { useRestoreFocus } from '../shared/useRestoreFocus'
 import { COPY_STATE_DISPLAY } from './display'
 import styles from './CopyDrawer.module.css'

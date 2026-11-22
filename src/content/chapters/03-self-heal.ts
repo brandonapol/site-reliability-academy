@@ -1,5 +1,5 @@
-import { reduce } from '../../engine/game'
-import type { Chapter, WishOption } from '../../engine/story/types'
+import { reduce } from '@sra/engine/game'
+import type { Chapter, WishOption } from '@sra/engine/story/types'
 import { startingWorld } from './helpers'
 
 /** Advance the cluster until starting copies are Running, so unplug/box-off have something to do. */

@@ -1,7 +1,7 @@
-import { prCheckStatus, schedulePipeline } from '../../engine/ci'
+import { prCheckStatus, schedulePipeline } from '@sra/engine/ci'
 import { WEB_SUITE } from '../testSuites'
-import { openPR, setPRChecks } from '../../engine/gitops'
-import type { Chapter } from '../../engine/story/types'
+import { openPR, setPRChecks } from '@sra/engine/gitops'
+import type { Chapter } from '@sra/engine/story/types'
 import { startingWorld } from './helpers'
 
 const SIGNUP_BUG = { signupRejectsDotInEmail: true }

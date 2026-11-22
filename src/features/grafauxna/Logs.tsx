@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { LogLevel } from '../../engine/telemetry'
+import type { LogLevel } from '@sra/engine/telemetry'
 import { SERVICES } from '../../content'
 import { useGame } from '../../store'
 import styles from './Grafauxna.module.css'

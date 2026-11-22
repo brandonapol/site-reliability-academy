@@ -1,4 +1,4 @@
-import { yamlLines, type Wish } from '../../engine/gitops'
+import { yamlLines, type Wish } from '@sra/engine/gitops'
 import styles from './GitNub.module.css'
 
 /**
