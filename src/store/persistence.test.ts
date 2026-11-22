@@ -1,0 +1,242 @@
+import { describe, expect, it } from 'vitest'
+
+import { GAME_STATE_VERSION, blankState, type GameState } from '../engine/game'
+import { toyConfig } from '../engine/story/__fixtures__/toyChapter'
+import {
+  MAX_SAVED_CI_NOTICES,
+  MAX_SAVED_CLUSTER_EVENTS,
+  MAX_SAVED_GITOPS_EVENTS,
+  MAX_SAVED_MESSAGES,
+  STORAGE_KEY,
+  browserStorage,
+  clearSave,
+  loadSave,
+  writeSave,
+  type StorageLike,
+} from './persistence'
+
+const config = toyConfig()
+
+function memoryStorage(): StorageLike & { data: Map<string, string> } {
+  const data = new Map<string, string>()
+  return {
+    data,
+    getItem: (key) => data.get(key) ?? null,
+    setItem: (key, value) => void data.set(key, value),
+    removeItem: (key) => void data.delete(key),
+  }
+}
+
+const brokenStorage: StorageLike = {
+  getItem: () => {
+    throw new Error('SecurityError')
+  },
+  setItem: () => {
+    throw new Error('QuotaExceededError')
+  },
+  removeItem: () => {
+    throw new Error('SecurityError')
+  },
+}
+
+function withMessages(state: GameState, count: number): GameState {
+  const messages = Array.from({ length: count }, (_, i) => ({
+    id: `msg-${i}`,
+    channel: 'team',
+    from: 'sam',
+    text: `hello ${i}`,
+    time: state.clock.now + i,
+  }))
+  return { ...state, flack: { ...state.flack, messages } }
+}
+
+function withClusterEvents(state: GameState, count: number): GameState {
+  const clusterEvents = Array.from({ length: count }, (_, i) => ({
+    at: state.clock.now + i,
+    kind: 'Scheduled' as const,
+    raw: `Scheduled search-${i} to box-1`,
+    english: `Starting a new copy of search on box-1 (${i}).`,
+    appId: 'search',
+  }))
+  return { ...state, clusterEvents }
+}
+
+function withGitopsEvents(state: GameState, count: number): GameState {
+  const gitopsEvents = Array.from({ length: count }, (_, i) => ({
+    at: state.clock.now + i,
+    kind: 'AutoSync' as const,
+    raw: `Sync operation succeeded for search (${i})`,
+    english: `Argh CD made the cluster match GitNub: search is now 3 copies of v1.${i}.`,
+    appId: 'search',
+  }))
+  return { ...state, gitopsEvents }
+}
+
+function withCiNotices(state: GameState, count: number): GameState {
+  const ciNotices = Array.from({ length: count }, (_, i) => ({
+    at: state.clock.now + i,
+    raw: `Build #${i} passed`,
+    english: `Build ${i} passed.`,
+  }))
+  return { ...state, ciNotices }
+}
+
+describe('loadSave / writeSave round trip', () => {
+  it('loads back exactly what was written', () => {
+    const storage = memoryStorage()
+    const game = blankState(config)
+    writeSave(storage, game, [])
+    const loaded = loadSave(storage)
+    expect(loaded).toEqual({
+      kind: 'loaded',
+      save: { version: GAME_STATE_VERSION, game, scheduled: [] },
+    })
+  })
+
+  it('is empty when nothing has been saved', () => {
+    expect(loadSave(memoryStorage())).toEqual({ kind: 'empty' })
+  })
+
+  it('is empty when there is no storage at all', () => {
+    expect(loadSave(undefined)).toEqual({ kind: 'empty' })
+  })
+
+  it('discards unparsable JSON', () => {
+    const storage = memoryStorage()
+    storage.setItem(STORAGE_KEY, 'not json')
+    expect(loadSave(storage)).toEqual({ kind: 'discarded' })
+  })
+
+  it('discards a save from an incompatible schema version', () => {
+    const storage = memoryStorage()
+    storage.setItem(STORAGE_KEY, JSON.stringify({ version: GAME_STATE_VERSION + 1, game: {} }))
+    expect(loadSave(storage)).toEqual({ kind: 'discarded' })
+  })
+
+  it('discards a save with no version at all', () => {
+    const storage = memoryStorage()
+    storage.setItem(STORAGE_KEY, JSON.stringify({ game: {} }))
+    expect(loadSave(storage)).toEqual({ kind: 'discarded' })
+  })
+})
+
+describe('capping for storage', () => {
+  it('keeps only the most recent MAX_SAVED_MESSAGES Flack messages', () => {
+    const storage = memoryStorage()
+    const game = withMessages(blankState(config), MAX_SAVED_MESSAGES + 50)
+    writeSave(storage, game, [])
+    const loaded = loadSave(storage)
+    if (loaded.kind !== 'loaded') throw new Error('expected a loaded save')
+    expect(loaded.save.game.flack.messages).toHaveLength(MAX_SAVED_MESSAGES)
+    expect(loaded.save.game.flack.messages.at(-1)?.id).toBe(`msg-${MAX_SAVED_MESSAGES + 49}`)
+  })
+
+  it('keeps only the most recent MAX_SAVED_CLUSTER_EVENTS cluster events', () => {
+    const storage = memoryStorage()
+    const game = withClusterEvents(blankState(config), MAX_SAVED_CLUSTER_EVENTS + 50)
+    writeSave(storage, game, [])
+    const loaded = loadSave(storage)
+    if (loaded.kind !== 'loaded') throw new Error('expected a loaded save')
+    expect(loaded.save.game.clusterEvents).toHaveLength(MAX_SAVED_CLUSTER_EVENTS)
+    expect(loaded.save.game.clusterEvents.at(-1)?.raw).toBe(
+      `Scheduled search-${MAX_SAVED_CLUSTER_EVENTS + 49} to box-1`
+    )
+  })
+
+  it('keeps only the most recent MAX_SAVED_GITOPS_EVENTS gitops events', () => {
+    const storage = memoryStorage()
+    const game = withGitopsEvents(blankState(config), MAX_SAVED_GITOPS_EVENTS + 50)
+    writeSave(storage, game, [])
+    const loaded = loadSave(storage)
+    if (loaded.kind !== 'loaded') throw new Error('expected a loaded save')
+    expect(loaded.save.game.gitopsEvents).toHaveLength(MAX_SAVED_GITOPS_EVENTS)
+    expect(loaded.save.game.gitopsEvents.at(-1)?.raw).toBe(
+      `Sync operation succeeded for search (${MAX_SAVED_GITOPS_EVENTS + 49})`
+    )
+  })
+
+  it('keeps only the most recent MAX_SAVED_CI_NOTICES CI notices', () => {
+    const storage = memoryStorage()
+    const game = withCiNotices(blankState(config), MAX_SAVED_CI_NOTICES + 50)
+    writeSave(storage, game, [])
+    const loaded = loadSave(storage)
+    if (loaded.kind !== 'loaded') throw new Error('expected a loaded save')
+    expect(loaded.save.game.ciNotices).toHaveLength(MAX_SAVED_CI_NOTICES)
+    expect(loaded.save.game.ciNotices.at(-1)?.raw).toBe(
+      `Build #${MAX_SAVED_CI_NOTICES + 49} passed`
+    )
+  })
+
+  it("doesn't touch a save that's already under the caps", () => {
+    const storage = memoryStorage()
+    const game = withMessages(blankState(config), 3)
+    writeSave(storage, game, [])
+    const loaded = loadSave(storage)
+    if (loaded.kind !== 'loaded') throw new Error('expected a loaded save')
+    expect(loaded.save.game.flack.messages).toHaveLength(3)
+  })
+})
+
+describe('failure modes', () => {
+  it('writeSave returns false and never throws when storage throws', () => {
+    expect(writeSave(brokenStorage, blankState(config), [])).toBe(false)
+  })
+
+  it('loadSave discards (never throws) when storage throws', () => {
+    expect(loadSave(brokenStorage)).toEqual({ kind: 'discarded' })
+  })
+
+  it('clearSave never throws when storage throws', () => {
+    expect(() => clearSave(brokenStorage)).not.toThrow()
+  })
+
+  it('writeSave and loadSave are no-ops without storage', () => {
+    expect(writeSave(undefined, blankState(config), [])).toBe(false)
+    expect(loadSave(undefined)).toEqual({ kind: 'empty' })
+  })
+
+  it('browserStorage falls back to undefined outside a browser (or when it throws)', () => {
+    // jsdom provides window.localStorage, so this just proves it doesn't throw either way.
+    expect(() => browserStorage()).not.toThrow()
+  })
+})
+
+describe('incident state (#31)', () => {
+  it('round-trips an open incident, timeline and all', () => {
+    const storage = memoryStorage()
+    const base = blankState(config)
+    const game: GameState = {
+      ...base,
+      incident: {
+        declaredCount: 1,
+        current: {
+          service: 'billing',
+          phase: 'open',
+          startedAt: 100,
+          marks: { paged: 100, acked: 160, declared: 200 },
+          declaration: {
+            number: 1,
+            slug: 'checkout',
+            channelId: 'inc-1-checkout',
+            severity: 'SEV2',
+            roles: { commander: 'morgan', ops: 'player', comms: 'taylor' },
+          },
+          timeline: [{ at: 100, kind: 'paged', text: 'Paged: checkout' }],
+          impact: { customers: 12.5, sampledAt: 200 },
+          statusPosts: [],
+        },
+      },
+    }
+    expect(writeSave(storage, game, [])).toBe(true)
+    const loaded = loadSave(storage)
+    expect(loaded.kind).toBe('loaded')
+    if (loaded.kind === 'loaded') expect(loaded.save.game.incident).toEqual(game.incident)
+  })
+
+  it('discards a save from before the incident engine landed (version 2)', () => {
+    const storage = memoryStorage()
+    storage.setItem(STORAGE_KEY, JSON.stringify({ version: 2, game: {}, scheduled: [] }))
+    expect(GAME_STATE_VERSION).toBe(3)
+    expect(loadSave(storage)).toEqual({ kind: 'discarded' })
+  })
+})
