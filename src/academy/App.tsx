@@ -4,6 +4,7 @@ import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router'
 import type { ProgressStore } from '../progress/store'
 import { CourseMap } from './CourseMap'
 import { Header } from './Header'
+import { Landing } from './Landing'
 import { LessonPage } from './LessonPage'
 import { NotFound } from './NotFound'
 import { ProgressPage } from './ProgressPage'
@@ -23,7 +24,7 @@ function ScrollToTop() {
 export function AcademyRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/course/practitioner" replace />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/course" element={<Navigate to="/course/practitioner" replace />} />
       <Route path="/course/:trackId" element={<CourseMap />} />
       <Route path="/lesson/:lessonId" element={<LessonPage />} />

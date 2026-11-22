@@ -39,6 +39,46 @@ function withChecklist(lesson: Lesson, run: () => Promise<void>) {
   })
 }
 
+describe('the landing page', () => {
+  it('states the cost first, and starts either track', () => {
+    renderAt('#/')
+    const headings = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
+    expect(headings[0]).toBe('What it costs')
+    expect(screen.getByText(/The course is free/)).toBeInTheDocument()
+    expect(screen.getByText(/academy never takes/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Start week 1' })).toHaveAttribute(
+      'href',
+      '#/lesson/inkwell-boxes?track=practitioner'
+    )
+    expect(screen.getByRole('link', { name: 'Start module 1' })).toHaveAttribute(
+      'href',
+      '#/lesson/inkwell-boxes?track=everyone'
+    )
+  })
+})
+
+describe('the AI policy', () => {
+  it('opens the Practitioner track and returns at Phase 4 and Phase 6', () => {
+    renderAt('#/course/practitioner')
+    expect(
+      screen.getByRole('complementary', { name: 'Please do the exercises without AI assistants' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('complementary', { name: 'A reminder before you take the pager' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('complementary', { name: 'Weeks 27–28: AI on, deliberately' })
+    ).toBeInTheDocument()
+  })
+
+  it('has a gentler version for Reliability for Everyone', () => {
+    renderAt('#/course/everyone')
+    expect(
+      screen.getByRole('complementary', { name: 'A note on AI assistants' })
+    ).toBeInTheDocument()
+  })
+})
+
 describe('the course map', () => {
   it('shows every Practitioner week, with unwritten ones marked coming soon', () => {
     renderAt('#/course/practitioner')

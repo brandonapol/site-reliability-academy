@@ -44,6 +44,7 @@ test('progress survives a reload, and Continue finds the last lesson', async ({ 
 
 test('academy pages have no axe violations', async ({ page }) => {
   for (const route of [
+    '#/',
     '#/course/practitioner',
     '#/course/everyone',
     '#/lesson/inkwell-first-page',
@@ -58,12 +59,19 @@ test('academy pages have no axe violations', async ({ page }) => {
 
 test('the course pages work at phone width', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 })
-  await page.goto('./#/course/everyone')
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Reliability for Everyone' })
-  ).toBeVisible()
-  const overflows = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth
-  )
-  expect(overflows).toBe(false)
+  for (const route of ['#/', '#/course/everyone', '#/lesson/inkwell-first-page']) {
+    await page.goto(`./${route}`)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    const overflows = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth
+    )
+    expect(overflows, route).toBe(false)
+  }
+})
+
+test('the landing page shows the cost without scrolling on a laptop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 })
+  await page.goto('./')
+  await expect(page.getByRole('heading', { name: 'What it costs' })).toBeInViewport()
+  await expect(page.getByText(/under \$100/)).toBeInViewport()
 })
