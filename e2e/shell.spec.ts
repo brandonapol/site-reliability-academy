@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test('the three-column layout, tab switching, deep links and locked tabs', async ({ page }) => {
-  await page.goto('./')
+  await page.goto('./play.html')
 
   // Three columns.
   await expect(page.getByRole('complementary', { name: 'Instructions' })).toBeVisible()
@@ -28,7 +28,7 @@ test('the three-column layout, tab switching, deep links and locked tabs', async
 
   // A locked tab can't be opened by URL either: redirected back to wherever you were (Argh CD, at
   // this point in the test), with an explanation.
-  await page.goto('./#/gitnub')
+  await page.goto('./play.html#/gitnub')
   await expect(page.getByRole('tab', { name: 'Argh CD' })).toHaveAttribute('aria-selected', 'true')
   await expect(page).toHaveURL(/#\/argh-cd\/applications$/)
   await expect(page.getByRole('status')).toContainText("GitNub isn't open to you yet")
@@ -45,7 +45,7 @@ test('the three-column layout, tab switching, deep links and locked tabs', async
 
 test('below 1100px wide, the small-screen notice replaces the layout', async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 800 })
-  await page.goto('./')
+  await page.goto('./play.html')
   await expect(page.getByRole('note')).toContainText('works best on a laptop or desktop')
   await expect(page.getByRole('tablist', { name: 'Apps' })).toBeHidden()
 })
