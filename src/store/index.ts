@@ -2,3 +2,4 @@
 export * from './gameStore'
 export * from './persistence'
 export * from './react'
+export * from './incidentHistory'

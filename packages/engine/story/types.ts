@@ -88,6 +88,13 @@ export type Effect = (
    * (e.g. a page that lands 30 seconds after the step starts). See `engine/incident`.
    */
   | { type: 'incident'; command: IncidentCommand }
+  /**
+   * Time passes: moves the fake clock on by `ms` and lets the incident's customer impact counter
+   * catch up (#32). Ch 9 uses it for the minutes a wrong mitigation idea costs, and for "fifteen
+   * quiet minutes later" before the all-clear. The cluster and Argh CD don't run during the jump;
+   * they catch up on the next real tick.
+   */
+  | { type: 'passTime'; ms: number }
 ) & {
   /** Wait this long before applying. Only the store honours delays; tests apply at once. */
   delayMs?: number

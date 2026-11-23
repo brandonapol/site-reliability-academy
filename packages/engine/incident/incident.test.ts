@@ -180,6 +180,61 @@ describe('customer impact counter', () => {
     expect(later.incident.current!.impact.customers).toBe(incident.impact.customers)
   })
 
+  it("doesn't count an Argh CD rollback as recovered while GitNub still asks for the bad version", () => {
+    // GitNub says billing@2.4.1, Argh CD history has an earlier 2.4.0 sync to roll back to.
+    const base = brokenBillingState(config)
+    const gitops = createGitOps({
+      config: { autoSyncDelayMs: 100, selfHealDelayMs: 200 },
+      wishes: [{ app: 'billing', version: '2.4.1', copies: 2 }],
+    })
+    const synced = run(
+      { ...base, gitops },
+      { type: 'sync', app: 'billing' },
+      cmd({ kind: 'page', service: 'billing', text: 'checkout' })
+    )
+    const withOldEntry: GameState = {
+      ...synced,
+      gitops: {
+        ...synced.gitops,
+        apps: {
+          billing: {
+            app: 'billing',
+            history: [
+              { id: 'sync-old', at: 0, version: '2.4.0', copies: 2, trigger: 'auto-sync' },
+              ...synced.gitops.apps.billing!.history,
+            ],
+          },
+        },
+      },
+    }
+    const rolledBack = run(
+      withOldEntry,
+      { type: 'rollback', app: 'billing', historyId: 'sync-old' },
+      tick(50)
+    )
+    expect(rolledBack.incident.current!.timeline.some((e) => e.kind === 'rollbackStarted')).toBe(
+      true
+    )
+    expect(rolledBack.incident.current!.marks.mitigated).toBeUndefined()
+
+    // Self-heal puts 2.4.1 back, and customers keep failing.
+    const healed = run(rolledBack, tick(300), tick(60_000))
+    expect(healed.cluster.wishes.billing?.version).toBe('2.4.1')
+    expect(healed.incident.current!.marks.mitigated).toBeUndefined()
+    expect(healed.incident.current!.impact.customers).toBeGreaterThan(
+      rolledBack.incident.current!.impact.customers
+    )
+  })
+
+  it('passTime samples the counter, so time spent on a wrong idea shows up as impact', () => {
+    const state = declared()
+    const after = applyEffect(config, state, { type: 'passTime', ms: 5 * 60_000 }).state
+    expect(after.clock.now).toBe(state.clock.now + 5 * 60_000)
+    expect(after.incident.current!.impact.customers).toBeGreaterThan(
+      state.incident.current!.impact.customers
+    )
+  })
+
   it('freezes when no ticks arrive (the store stops ticking while paused)', () => {
     const state = declared()
     const before = state.incident.current!.impact.customers
@@ -210,6 +265,20 @@ describe('status updates', () => {
     expect(state.incident.current?.statusPosts).toEqual([
       { stage: 'identified', optionId: 'identified-b' },
     ])
+  })
+
+  it('posting the very same update twice only posts it once', () => {
+    const post = cmd({ kind: 'postStatus', stage: 'monitoring', optionId: 'monitoring-a' })
+    const state = run(
+      brokenBillingState(config),
+      cmd({ kind: 'declare', severity: 'SEV2', service: 'billing' }),
+      post,
+      post
+    )
+    expect(state.statusPage.updates).toHaveLength(1)
+    expect(state.incident.current?.timeline.filter((e) => e.kind === 'statusPosted')).toHaveLength(
+      1
+    )
   })
 
   it('ignores an option that does not exist', () => {

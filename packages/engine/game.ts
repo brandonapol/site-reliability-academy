@@ -296,6 +296,12 @@ export interface ReduceResult {
 
 /** Fake seconds that pass per action, so messages get plausible, increasing timestamps. */
 const TICK = 20
+/** Actions that ask for help, and so never move the fake clock. See `reduce`. */
+const HELP_ACTIONS: ReadonlySet<Action['type']> = new Set([
+  'showHint',
+  'askMentor',
+  'revealSolution',
+])
 
 /**
  * A cluster with nothing on it: no boxes, no wishes. Real content isn't wired up until #10, so
@@ -443,7 +449,12 @@ function tick(config: GameConfig, previous: GameState, deltaMs: number): ReduceR
 export function reduce(config: GameConfig, previous: GameState, action: Action): ReduceResult {
   if (action.type === 'tick') return tick(config, previous, action.deltaMs)
 
-  const state: GameState = { ...previous, clock: { now: previous.clock.now + TICK } }
+  // Every action nudges the clock so its messages sort after earlier ones, except asking for help:
+  // a hint, a question to Kai or a revealed solution must never cost the learner incident time
+  // (#16), so it can never score worse than going it alone.
+  const state: GameState = HELP_ACTIONS.has(action.type)
+    ? previous
+    : { ...previous, clock: { now: previous.clock.now + TICK } }
 
   switch (action.type) {
     case 'chooseOption':
@@ -653,15 +664,17 @@ export function reduce(config: GameConfig, previous: GameState, action: Action):
     }
 
     case 'revertPR': {
+      const prId = resolvePrId(state, action.prId)
+      if (!prId) return { state: previous, effects: [] }
       try {
-        const { gitops, pullRequest } = revertGitOpsPR(state.gitops, action.prId, state.clock.now)
+        const { gitops, pullRequest } = revertGitOpsPR(state.gitops, prId, state.clock.now)
         const recorded = recordIfOpen(
           { ...state, gitops },
           'rollbackStarted',
-          `Rollback started: reverted ${action.prId} in GitNub.`
+          `Rollback started: reverted ${prId} in GitNub.`
         )
         return advanceStory(config, recorded.state, [
-          { type: 'prReverted', prId: action.prId, revertPrId: pullRequest.id },
+          { type: 'prReverted', prId, revertPrId: pullRequest.id },
           ...recorded.events,
         ])
       } catch {

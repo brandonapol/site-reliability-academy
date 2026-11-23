@@ -158,29 +158,94 @@ describe('StatusComposer', () => {
       { stage: 'monitoring', optionId: 'monitoring-a' },
     ])
   })
+
+  it('follows the incident to its next stage when someone else posts one (#32)', () => {
+    const store = setup(<StatusComposer />)
+    command(store, { kind: 'declare', severity: 'SEV2', service: 'billing' })
+    // Taylor (comms) posts from a chapter script, not through this composer.
+    command(store, { kind: 'postStatus', stage: 'investigating', optionId: 'investigating-a' })
+    command(store, { kind: 'postStatus', stage: 'identified', optionId: 'identified-a' })
+    expect(screen.getByRole('radio', { name: 'Monitoring' }).getAttribute('aria-checked')).toBe(
+      'true'
+    )
+  })
+
+  it('posting tells the story which update was picked, by its Show me target (#32)', () => {
+    const store = setup(<StatusComposer />)
+    const dispatched: unknown[] = []
+    const dispatch = store.getState().dispatch
+    act(() =>
+      store.setState({
+        dispatch: (action) => {
+          dispatched.push(action)
+          dispatch(action)
+        },
+      })
+    )
+    command(store, { kind: 'declare', severity: 'SEV2', service: 'billing' })
+    const option = screen.getByRole('radio', { name: 'investigating update a' })
+    expect(option.closest('[data-target]')).toHaveAttribute(
+      'data-target',
+      'status-option:investigating-a'
+    )
+    fireEvent.click(option)
+    fireEvent.click(screen.getByRole('button', { name: 'Post to status page' }))
+    expect(dispatched).toContainEqual({
+      type: 'clickTarget',
+      targetId: 'status-option:investigating-a',
+    })
+  })
 })
 
 describe('Scorecard', () => {
-  it('shows each number next to the typical range, with a note and no pass/fail', () => {
+  function resolvedIncident() {
     const store = setup(null)
     command(store, { kind: 'page', service: 'billing', text: 'checkout' })
     act(() => void vi.advanceTimersByTime(TICK_INTERVAL_MS * 10))
     command(store, { kind: 'ack' })
     command(store, { kind: 'recovered' })
     command(store, { kind: 'resolve' })
-    const incident = store.getState().game.incident.current!
+    return store
+  }
+
+  function show(store: GameStore) {
     render(
       <GameStoreProvider store={store}>
-        <Scorecard incident={incident} />
+        <Scorecard incident={store.getState().game.incident.current!} />
       </GameStoreProvider>
     )
-    const table = screen.getByRole('table')
+    return screen.getByRole('table')
+  }
+
+  it('on a first run shows each number and what moves it, with no benchmark and no pass/fail', () => {
+    const table = show(resolvedIncident())
+    expect(screen.getByText(/Your first run of this incident/)).toBeTruthy()
     const mtta = within(table).getByRole('row', { name: /Time to acknowledge/ })
-    expect(within(mtta).getByText('1m–5m')).toBeTruthy()
-    expect(within(mtta).getByText('Below typical')).toBeTruthy()
-    expect(within(mtta).getByText('mtta below')).toBeTruthy()
-    expect(within(table).getByRole('row', { name: /Customers affected/ })).toBeTruthy()
-    expect(screen.queryByText(/pass|fail/i)).toBeNull()
+    expect(within(mtta).getByText('mtta moves')).toBeTruthy()
+    expect(within(table).queryByRole('columnheader', { name: 'Your last run' })).toBeNull()
+    expect(screen.queryByText(/typical|pass|fail/i)).toBeNull()
+  })
+
+  it('compares a replay only with the learner’s own earlier runs', () => {
+    const store = resolvedIncident()
+    act(() =>
+      store.setState({
+        incidentPast: [
+          {
+            mtta: 1_000,
+            timeToMitigate: undefined,
+            timeToResolve: undefined,
+            customersAffected: 5,
+          },
+        ],
+      })
+    )
+    const table = show(store)
+    expect(within(table).getByRole('columnheader', { name: 'Your last run' })).toBeTruthy()
+    expect(within(table).getByRole('columnheader', { name: 'Your best' })).toBeTruthy()
+    const mtta = within(table).getByRole('row', { name: /Time to acknowledge/ })
+    expect(within(mtta).getByText('Slower than last time')).toBeTruthy()
+    expect(screen.queryByText(/typical/i)).toBeNull()
   })
 })
 

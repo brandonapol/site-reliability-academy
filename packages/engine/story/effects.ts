@@ -1,7 +1,7 @@
 import type { GameEvent } from '../events'
 import type { GameState } from '../game'
 import { approvePR } from '../gitops'
-import { applyIncidentCommand } from '../incident/incident'
+import { applyIncidentCommand, tickIncident } from '../incident/incident'
 import { interpolate } from './template'
 import type { Effect, GameConfig } from './types'
 
@@ -162,6 +162,11 @@ export function applyEffect(config: GameConfig, state: GameState, effect: Effect
         state: { ...state, gitops },
         events: [{ type: 'prApproved', prId: effect.prId, reviewer: effect.reviewer }],
       }
+    }
+
+    case 'passTime': {
+      const moved: GameState = { ...state, clock: { now: state.clock.now + effect.ms } }
+      return tickIncident(config, moved)
     }
 
     case 'incident': {

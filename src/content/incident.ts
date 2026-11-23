@@ -1,11 +1,9 @@
 import type { IncidentContent } from '@sra/engine/incident/types'
 
-const MINUTE = 60_000
-
 /**
  * Incident content (#31): who plays which role, the declaration template, how telemetry turns into
- * the customer impact counter, the pre-written status page updates, and what "a typical team"
- * looks like on the scorecard. Ch 9 drives it; Ch 10's postmortem reads the timeline it leaves.
+ * the customer impact counter, the pre-written status page updates, and what moves each scorecard
+ * number. The scorecard compares a learner only with their own earlier runs. Ch 9 drives it; Ch 10's postmortem reads the timeline it leaves.
  * See planning.md → "Incident".
  */
 export const INCIDENT_CONTENT: IncidentContent = {
@@ -138,52 +136,26 @@ export const INCIDENT_CONTENT: IncidentContent = {
     ],
   },
 
-  typical: {
+  scoring: {
     mtta: {
       label: 'Time to acknowledge',
-      low: 1 * MINUTE,
-      high: 5 * MINUTE,
-      notes: {
-        below: 'You acknowledged fast. Ack first, then think: it tells everyone someone is on it.',
-        within: 'Right where a typical on-call lands. Acking is the cheapest thing you can do.',
-        above:
-          'Slower than most. The page kept ringing while nobody had said "mine". Ack first, even before you understand it.',
-      },
+      moves:
+        'Starts when the page fires and stops when you acknowledge. Ack first, then think: it tells everyone someone is on it.',
     },
     timeToMitigate: {
       label: 'Time to mitigate',
-      low: 10 * MINUTE,
-      high: 30 * MINUTE,
-      notes: {
-        below:
-          'Faster than a typical team. Rolling back before finding the root cause is what bought this.',
-        within:
-          'A typical team. Rolling back sooner, before debugging, is the usual way to shrink it.',
-        above:
-          'Longer than most. Time spent proving the cause before rolling back is time customers were failing.',
-      },
+      moves:
+        'Every fix that didn’t work added its minutes here. Rolling back the change that caused it, before proving why, is usually the fastest way to stop the bleeding.',
     },
     timeToResolve: {
       label: 'Time to resolve',
-      low: 30 * MINUTE,
-      high: 90 * MINUTE,
-      notes: {
-        below: 'Quick. Make sure you watched long enough after the fix before calling it resolved.',
-        within: 'A typical team: mitigate, watch for a while, then call it.',
-        above:
-          'Longer than most. Watching after the fix is good; leaving it open for hours is not.',
-      },
+      moves:
+        'Includes checking the fix held and posting the all-clear. Watching for a while after the fix is part of the job, not wasted time.',
     },
     customersAffected: {
       label: 'Customers affected',
-      low: 200,
-      high: 1500,
-      notes: {
-        below: 'Fewer than a typical team. Every minute you shaved off mitigation shows up here.',
-        within: 'About what a typical team would see for a bug like this.',
-        above:
-          'More than most. This number only stops when the bad version is out of service, so roll back early.',
-      },
+      moves:
+        'Climbs every minute the bad version serves checkouts, from the page until the rollback lands. Asking Kai or Morgan for help never adds to it; guessing wrong does.',
     },
   },
 }

@@ -7,10 +7,13 @@ export function Chart({
   title,
   points,
   unit,
+  markers = [],
 }: {
   title: string
   points: SeriesPoint[]
   unit: string
+  /** Fake-clock times to draw a dashed vertical line at, e.g. deploys. */
+  markers?: number[]
 }) {
   const [table, setTable] = useState(false)
   const values = points.map((point) => point.value)
@@ -26,6 +29,10 @@ export function Chart({
     })
     .join(' ')
 
+  const first = points[0]?.t ?? 0
+  const tSpan = (points.at(-1)?.t ?? 0) - first || 1
+  const markerXs = markers.map((t) => ((t - first) / tSpan) * 100).filter((x) => x >= 0 && x <= 100)
+
   return (
     <section className={styles.chart}>
       <h3>{title}</h3>
@@ -33,6 +40,19 @@ export function Chart({
         Now {last.toFixed(1)} {unit}. Range {min.toFixed(1)}–{max.toFixed(1)} {unit}.
       </p>
       <svg viewBox="0 0 100 40" role="img" aria-label={`${title} chart`}>
+        {markerXs.map((x) => (
+          <line
+            key={x}
+            x1={x}
+            x2={x}
+            y1={0}
+            y2={40}
+            stroke="currentColor"
+            strokeWidth="0.4"
+            strokeDasharray="1.5 1.5"
+            opacity={0.6}
+          />
+        ))}
         {path && <path d={path} fill="none" stroke="currentColor" strokeWidth="1.2" />}
       </svg>
       <button

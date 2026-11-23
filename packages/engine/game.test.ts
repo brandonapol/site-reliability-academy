@@ -268,4 +268,22 @@ describe('reduce: Argh CD sync / rollback (#16)', () => {
       true
     )
   })
+
+  it("revertPR accepts 'latest' for the most recent pull request, like merge and approve", () => {
+    const merged = play(config, syncedWorld(), [
+      {
+        type: 'openPR',
+        repo: 'inkwell/deploy',
+        title: 'Bump search to v2',
+        change: { kind: 'wish', app: 'search', wish: { app: 'search', version: 'v2', copies: 3 } },
+      },
+      { type: 'approvePR', prId: 'latest', reviewer: 'kai' },
+      { type: 'mergePR', prId: 'latest' },
+    ])
+    const original = merged.gitops.pullRequests.at(-1)!
+    expect(original.status).toBe('merged')
+    const reverted = reduce(config, merged, { type: 'revertPR', prId: 'latest' }).state
+    expect(reverted.gitops.pullRequests).toHaveLength(2)
+    expect(reverted.gitops.deployRepo.wishes.search?.version).toBe('v1')
+  })
 })

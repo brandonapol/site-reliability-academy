@@ -169,14 +169,25 @@ export const INKWELL_FIRST_PAGE: GameLesson = {
   brief: FIRST_PAGE_BRIEF,
   do: {
     kind: 'game',
-    chapters: ['ch8-alerts', 'bonus-traffic', 'bonus-database'],
-    summary: 'Play the alerts chapter and the traffic and database chapters.',
+    chapters: ['ch8-alerts', '09-the-page', 'bonus-traffic', 'bonus-database'],
+    summary:
+      'Play the alerts chapter, take your first page, then the traffic and database chapters.',
   },
   check: [
     {
-      id: 'noise-costs',
-      text: 'Explain why a noisy alert can be worse than no alert at all',
-      from: 'ch8-alerts/pick-rule',
+      id: 'ack-first',
+      text: 'Say why you acknowledge a page before you understand it',
+      from: '09-the-page/ack',
+    },
+    {
+      id: 'roll-back-first',
+      text: 'Explain why rolling back comes before finding the bug, while customers are failing',
+      from: '09-the-page/stop-bleeding',
+    },
+    {
+      id: 'clear-status-update',
+      text: 'Write a status update a customer can act on: no jargon, no blame',
+      from: '09-the-page/post-update',
     },
     {
       id: 'burn-rate',
@@ -187,16 +198,6 @@ export const INKWELL_FIRST_PAGE: GameLesson = {
       id: 'page-ticket-dashboard',
       text: 'Sort a signal into page, ticket or dashboard, and say why',
       from: 'ch8-alerts/sort',
-    },
-    {
-      id: 'spike-is-ticket',
-      text: 'Explain why a traffic spike with no errors is a ticket, not a page',
-      from: 'bonus-traffic/not-a-page',
-    },
-    {
-      id: 'scale-as-wish',
-      text: 'Scale an app the same way you ship one: as a wish in a pull request',
-      from: 'bonus-traffic/scale-web',
     },
     {
       id: 'database-timing',

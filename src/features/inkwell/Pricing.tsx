@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 
-import { useGame } from '../../store'
+import { useDispatch, useGame } from '../../store'
 import styles from './Pricing.module.css'
 import { COUPON_CODE, formatCents, isUnknownCoupon, quoteCheckout } from './site'
 
@@ -14,6 +14,7 @@ const TEST_CARD = { number: '4242 4242 4242 4242', expiry: '12/34', cvc: '123' }
  */
 export function Pricing() {
   const cluster = useGame((s) => s.game.cluster)
+  const dispatch = useDispatch()
   const [couponInput, setCouponInput] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
   const [couponError, setCouponError] = useState<string | null>(null)
@@ -46,6 +47,12 @@ export function Pricing() {
 
   const onPay = (event: FormEvent) => {
     event.preventDefault()
+    // Ch 9 reproduces (and later verifies) a coupon checkout; paying without one is a clue, not
+    // the reproduction, so it reports a different target.
+    dispatch({
+      type: 'clickTarget',
+      targetId: appliedCoupon ? 'inkwell-pay' : 'inkwell-pay-plain',
+    })
     setFailed(quote.doubled)
     setPaid(!quote.doubled)
   }
@@ -137,7 +144,7 @@ export function Pricing() {
           </div>
         </div>
 
-        <button type="submit" className={styles.pay}>
+        <button type="submit" className={styles.pay} data-target="inkwell-pay">
           Pay {formatCents(quote.totalCents)}
         </button>
       </form>

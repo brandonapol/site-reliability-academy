@@ -116,43 +116,41 @@ function checkEvent(
       !state.story.firedReactions.includes(`${step.id}:${reaction.id}`) &&
       reaction.when(state, event)
   )
-  if (reactions.length > 0) {
-    return {
-      state: {
-        ...state,
-        story: {
-          ...state.story,
-          firedReactions: [
-            ...state.story.firedReactions,
-            ...reactions.map((reaction) => `${step.id}:${reaction.id}`),
-          ],
-        },
-      },
-      effects: reactions.flatMap((reaction) => reaction.effects),
-      events: [],
-    }
-  }
+  const reacted: GameState =
+    reactions.length > 0
+      ? {
+          ...state,
+          story: {
+            ...state.story,
+            firedReactions: [
+              ...state.story.firedReactions,
+              ...reactions.map((reaction) => `${step.id}:${reaction.id}`),
+            ],
+          },
+        }
+      : state
+  const reactionEffects = reactions.flatMap((reaction) => reaction.effects)
 
+  // A reaction to a missed attempt (a wrong pick that also costs something, say) still counts as
+  // a miss and still shows Kai's inline response.
   if (ATTEMPT_EVENTS.has(event.type)) {
-    const misses = state.story.misses + 1
-    const hintsShown =
-      misses >= AUTO_HINT_AFTER_MISSES && step.hints.length > 0
-        ? Math.max(state.story.hintsShown, 1)
-        : state.story.hintsShown
-    const wrongAnswer =
-      event.type === 'optionChosen' && step?.wrongAnswers?.[event.optionId] !== undefined
-        ? { stepId: step.id, optionId: event.optionId, response: step.wrongAnswers[event.optionId] }
-        : undefined
-    return {
-      state: {
-        ...state,
-        story: { ...state.story, misses, hintsShown, lastWrongAnswer: wrongAnswer },
-      },
-      effects: [],
-      events: [],
-    }
+    const missed = recordMiss(reacted, step, event)
+    return { state: missed, effects: reactionEffects, events: [] }
   }
-  return { state, effects: [], events: [] }
+  return { state: reacted, effects: reactionEffects, events: [] }
+}
+
+function recordMiss(state: GameState, step: Step, event: GameEvent): GameState {
+  const misses = state.story.misses + 1
+  const hintsShown =
+    misses >= AUTO_HINT_AFTER_MISSES && step.hints.length > 0
+      ? Math.max(state.story.hintsShown, 1)
+      : state.story.hintsShown
+  const wrongAnswer =
+    event.type === 'optionChosen' && step.wrongAnswers?.[event.optionId] !== undefined
+      ? { stepId: step.id, optionId: event.optionId, response: step.wrongAnswers[event.optionId] }
+      : undefined
+  return { ...state, story: { ...state.story, misses, hintsShown, lastWrongAnswer: wrongAnswer } }
 }
 
 /**

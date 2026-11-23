@@ -9,6 +9,7 @@ import { wrapChapter } from './06-wrap'
 import { seeingInsideChapter } from './07-seeing-inside'
 import { sloChapter } from './ch7-slo'
 import { alertsChapter } from './ch8-alerts'
+import { thePageChapter } from './09-the-page'
 import { trafficSpikeChapter } from './bonus-traffic'
 import { databaseUpgradeChapter } from './bonus-database'
 
@@ -23,6 +24,7 @@ export const CHAPTERS: Chapter[] = [
   seeingInsideChapter,
   sloChapter,
   alertsChapter,
+  thePageChapter,
   trafficSpikeChapter,
   databaseUpgradeChapter,
 ]

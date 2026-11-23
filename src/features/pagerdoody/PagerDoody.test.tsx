@@ -65,4 +65,29 @@ describe('PagerDoody', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(store.getState().game.ui.overlay).toBeUndefined()
   })
+
+  it('declares the paged incident, then resolves it and shows the scorecard (#32)', async () => {
+    const user = userEvent.setup()
+    const store = renderPager()
+    act(() =>
+      store.getState().dispatch({
+        type: 'incident',
+        command: { kind: 'page', service: 'billing', text: 'checkout is erroring' },
+      })
+    )
+    await user.click(screen.getByRole('button', { name: 'Acknowledge' }))
+    expect(screen.queryByRole('button', { name: 'Resolve' })).toBeNull()
+
+    const declare = screen.getByRole('button', { name: 'Declare incident' })
+    expect(declare).toHaveAttribute('data-target', 'page-declare')
+    await user.click(declare)
+    expect(store.getState().game.incident.current?.declaration?.channelId).toBe('inc-1-checkout')
+
+    const resolve = screen.getByRole('button', { name: 'Resolve' })
+    expect(resolve).toHaveAttribute('data-target', 'page-resolve')
+    await user.click(resolve)
+    expect(store.getState().game.incident.current?.phase).toBe('resolved')
+    expect(screen.getByRole('region', { name: 'Scorecard' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Resolve' })).toBeNull()
+  })
 })

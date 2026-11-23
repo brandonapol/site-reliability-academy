@@ -9,6 +9,7 @@ import {
   type GameState,
   type ReduceResult,
 } from '@sra/engine/game'
+import { scoreValues, type ScoreValues } from '@sra/engine/incident'
 import type { Effect, GameConfig } from '@sra/engine/story/types'
 import {
   browserStorage,
@@ -18,6 +19,7 @@ import {
   type ScheduledEffect,
   type StorageLike,
 } from './persistence'
+import { loadIncidentHistory, pastRuns, recordIncidentRun } from './incidentHistory'
 
 /** How long before a delayed Flack message arrives the "typing…" indicator appears. */
 export const TYPING_LEAD_MS = 2000
@@ -51,6 +53,11 @@ export interface GameStoreState {
   paused: boolean
   /** Set when an unusable save was thrown away at startup, so the UI can say so. */
   notice?: 'save-discarded'
+  /**
+   * The learner's own earlier runs of the resolved incident's chapter, for its scorecard (#16).
+   * Undefined until an incident resolves; empty on a first run.
+   */
+  incidentPast?: ScoreValues[]
   dispatch: (action: Action) => void
   restartChapter: () => void
   resetEverything: () => void
@@ -82,6 +89,8 @@ export interface GameStoreOptions {
   timers?: Timers
   /** `location.search`, for `?chapter=`, `?debug=1` and `?fast=1`. */
   search?: string
+  /** Real time, only to date incident runs in the learner's history. */
+  now?: () => Date
 }
 
 export type GameStore = StoreApi<GameStoreState>
@@ -108,6 +117,8 @@ export function createGameStore(options: GameStoreOptions): GameStore {
   const timers = options.timers ?? browserTimers
   const params = new URLSearchParams(options.search ?? '')
   const rate = params.get('fast') === '1' ? FAST_CLOCK_FACTOR : 1
+  const now = options.now ?? (() => new Date())
+  let incidentHistory = loadIncidentHistory(storage)
   let saveHandle: unknown
   let intervalHandle: unknown
   let nextId = 1
@@ -186,8 +197,26 @@ export function createGameStore(options: GameStoreOptions): GameStore {
     }
   }
 
+  /** Saves a run to the learner's history the moment its incident resolves, never on reload. */
+  const recordIfResolved = (before: GameState, after: GameState) => {
+    const incident = after.incident.current
+    if (incident?.marks.resolved === undefined) return
+    const previous = before.incident.current
+    if (previous?.marks.resolved !== undefined && previous.startedAt === incident.startedAt) return
+    const chapterId = after.story.chapterId
+    const incidentPast = pastRuns(incidentHistory, chapterId)
+    incidentHistory = recordIncidentRun(storage, incidentHistory, {
+      chapterId,
+      recordedAt: now().toISOString(),
+      values: scoreValues(incident),
+    })
+    store.setState({ incidentPast })
+  }
+
   function commit(result: ReduceResult) {
+    const before = store.getState().game
     store.setState({ game: result.state })
+    recordIfResolved(before, result.state)
     scheduleEffects(result.effects)
     drainDue()
     updateTyping()
@@ -272,6 +301,12 @@ export function createGameStore(options: GameStoreOptions): GameStore {
     const loaded = loadSave(storage)
     if (loaded.kind === 'loaded') {
       store.setState({ game: loaded.save.game, scheduled: loaded.save.scheduled })
+      // A resolved incident in the save was recorded when it resolved: its run is the chapter's
+      // latest, so the scorecard compares against the ones before it.
+      if (loaded.save.game.incident.current?.marks.resolved !== undefined) {
+        const runs = pastRuns(incidentHistory, loaded.save.game.story.chapterId)
+        store.setState({ incidentPast: runs.slice(0, -1) })
+      }
       nextId =
         Math.max(0, ...loaded.save.scheduled.map((entry) => Number(entry.id.slice(3)) || 0)) + 1
       drainDue()

@@ -74,4 +74,42 @@ describe('Grafauxna', () => {
     expect(screen.getByText('Page on any error')).toBeInTheDocument()
     expect(screen.getByText(/burning the budget/i)).toBeInTheDocument()
   })
+
+  describe('during Ch 9’s outage (#32)', () => {
+    function renderOutage(hash: string) {
+      window.location.hash = hash
+      const store = createGameStore({
+        config: createGameConfig(),
+        storage: noStorage,
+        timers,
+        search: '?chapter=09&fast=1',
+      })
+      act(() => {
+        store.getState().pause()
+        // The first step's goal: opening PagerDoody is what makes the page land.
+        store.getState().dispatch({ type: 'openTab', tab: 'pagerdoody' })
+        store.getState().dispatch({ type: 'openTab', tab: 'grafauxna' })
+      })
+      render(<App store={store} />)
+      return store
+    }
+
+    it('opens on billing, with errors around 12% and a marker for the 2.4.1 deploy', () => {
+      renderOutage('#/grafauxna')
+      expect(screen.getByRole('combobox', { name: /service/i })).toHaveValue('billing')
+      const errors = screen.getByRole('heading', { name: 'Errors' }).closest('section')!
+      const now = Number(/Now ([\d.]+) %/.exec(errors.textContent ?? '')![1])
+      expect(now).toBeGreaterThan(10)
+      expect(
+        screen.getByText(/billing 2\.4\.1 deployed by Argh CD, 2 minutes ago/)
+      ).toBeInTheDocument()
+    })
+
+    it('shows the budget burning far faster than the 14.4× page threshold', () => {
+      renderOutage('#/grafauxna/slos')
+      const burn = screen.getByText(/Burn rate/)
+      const fiveMinute = Number(/Burn rate ([\d.]+)×/.exec(burn.textContent ?? '')![1])
+      expect(fiveMinute).toBeGreaterThan(14.4)
+    })
+  })
 })

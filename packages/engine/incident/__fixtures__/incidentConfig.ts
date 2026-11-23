@@ -5,8 +5,6 @@ import { toyConfig } from '../../story/__fixtures__/toyChapter'
 import type { GameConfig } from '../../story/types'
 import type { IncidentContent, StatusUpdateOption } from '../types'
 
-const MINUTE = 60_000
-
 function options(stage: string): StatusUpdateOption[] {
   return ['a', 'b', 'c'].map((suffix) => ({
     id: `${stage}-${suffix}`,
@@ -48,31 +46,11 @@ export const incidentContent: IncidentContent = {
     monitoring: options('monitoring'),
     resolved: options('resolved'),
   },
-  typical: {
-    mtta: {
-      label: 'Time to acknowledge',
-      low: 1 * MINUTE,
-      high: 5 * MINUTE,
-      notes: { below: 'mtta below', within: 'mtta within', above: 'mtta above' },
-    },
-    timeToMitigate: {
-      label: 'Time to mitigate',
-      low: 10 * MINUTE,
-      high: 30 * MINUTE,
-      notes: { below: 'ttm below', within: 'ttm within', above: 'ttm above' },
-    },
-    timeToResolve: {
-      label: 'Time to resolve',
-      low: 30 * MINUTE,
-      high: 90 * MINUTE,
-      notes: { below: 'ttr below', within: 'ttr within', above: 'ttr above' },
-    },
-    customersAffected: {
-      label: 'Customers affected',
-      low: 200,
-      high: 1500,
-      notes: { below: 'cust below', within: 'cust within', above: 'cust above' },
-    },
+  scoring: {
+    mtta: { label: 'Time to acknowledge', moves: 'mtta moves' },
+    timeToMitigate: { label: 'Time to mitigate', moves: 'ttm moves' },
+    timeToResolve: { label: 'Time to resolve', moves: 'ttr moves' },
+    customersAffected: { label: 'Customers affected', moves: 'cust moves' },
   },
 }
 
