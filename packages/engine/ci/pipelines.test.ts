@@ -58,6 +58,13 @@ describe('schedulePipeline', () => {
     expect(pipelineForPR(ci, 'no-such-pr')).toBeUndefined()
   })
 
+  it('gives a PR its newest pipeline once checks are re-run', () => {
+    const first = schedulePipeline(createCiState(), BASE_INPUT, 0)
+    const second = schedulePipeline(first.ci, BASE_INPUT, 60_000)
+    expect(second.pipeline.id).not.toBe(first.pipeline.id)
+    expect(pipelineForPR(second.ci, BASE_INPUT.prId)).toEqual(second.pipeline)
+  })
+
   it('gives each scheduled pipeline a fresh id', () => {
     let ci = createCiState()
     const first = schedulePipeline(ci, BASE_INPUT, 0)

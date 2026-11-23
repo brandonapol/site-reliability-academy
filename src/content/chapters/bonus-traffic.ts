@@ -1,6 +1,6 @@
 import { DEPLOY_REPO } from '@sra/engine/gitops'
 import type { Chapter } from '@sra/engine/story/types'
-import { startingWorld } from './helpers'
+import { keepUnlocked, startingWorld } from './helpers'
 
 export const trafficSpikeChapter: Chapter = {
   id: 'bonus-traffic',
@@ -15,7 +15,7 @@ export const trafficSpikeChapter: Chapter = {
       ui: {
         ...world.ui,
         activeTab: 'grafauxna',
-        unlockedTabs: ['flack', 'inkwell', 'arghcd', 'gitnub', 'grafauxna'],
+        unlockedTabs: keepUnlocked(state, ['flack', 'inkwell', 'arghcd', 'gitnub', 'grafauxna']),
         gitOpsEnforced: true,
       },
       flack: { ...world.flack, activeChannel: 'platform' },

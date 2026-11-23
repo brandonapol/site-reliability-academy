@@ -12,7 +12,7 @@ import { WEB_E2E_SUITE, SIGNUP_BUG_BEHAVIOUR } from './ci/__fixtures__/webE2eSui
 import { basicCluster as gitopsCluster, basicGitOps } from './gitops/__fixtures__/basicGitOps'
 import { toyConfig } from './story/__fixtures__/toyChapter'
 import { play } from './story/harness'
-import { blankState, initialState, reduce, type Action, type GameState } from './game'
+import { blankState, initialState, reduce, startChapter, type Action, type GameState } from './game'
 
 const config = toyConfig()
 
@@ -285,5 +285,15 @@ describe('reduce: Argh CD sync / rollback (#16)', () => {
     const reverted = reduce(config, merged, { type: 'revertPR', prId: 'latest' }).state
     expect(reverted.gitops.pullRequests).toHaveLength(2)
     expect(reverted.gitops.deployRepo.wishes.search?.version).toBe('v1')
+  })
+})
+
+describe('starting a chapter', () => {
+  it('closes an overlay the last chapter left open', () => {
+    const config = toyConfig()
+    const { state } = initialState(config)
+    const covered = { ...state, ui: { ...state.ui, overlay: 'order-form' } }
+    const next = startChapter(config, covered, config.chapters[0].id).state
+    expect(next.ui.overlay).toBeUndefined()
   })
 })

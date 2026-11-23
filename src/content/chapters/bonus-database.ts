@@ -1,5 +1,5 @@
 import type { Chapter } from '@sra/engine/story/types'
-import { startingWorld } from './helpers'
+import { keepUnlocked, startingWorld } from './helpers'
 
 export const databaseUpgradeChapter: Chapter = {
   id: 'bonus-database',
@@ -14,7 +14,7 @@ export const databaseUpgradeChapter: Chapter = {
       ui: {
         ...world.ui,
         activeTab: 'arghcd',
-        unlockedTabs: ['flack', 'inkwell', 'arghcd', 'gitnub'],
+        unlockedTabs: keepUnlocked(state, ['flack', 'inkwell', 'arghcd', 'gitnub']),
         gitOpsEnforced: true,
       },
       flack: { ...world.flack, activeChannel: 'platform' },

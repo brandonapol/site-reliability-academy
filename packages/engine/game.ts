@@ -370,6 +370,9 @@ export function startChapter(config: GameConfig, from: GameState, chapterId: str
   const prepared = chapter.setup(
     {
       ...from,
+      // A chapter starts on a clear screen: an overlay the last chapter left open would cover this
+      // one's controls (and its own Show me targets). A chapter that wants one opens it in setup.
+      ui: { ...from.ui, overlay: undefined },
       story: {
         ...from.story,
         chapterId,

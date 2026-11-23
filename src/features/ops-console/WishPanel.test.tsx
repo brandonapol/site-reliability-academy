@@ -21,6 +21,9 @@ const noStorage: StorageLike = {
 
 function renderPanel(options: Parameters<typeof testConfig>[0] = {}) {
   const store = createGameStore({ config: testConfig(options), storage: noStorage })
+  // Stop the fake clock: a tick landing mid-test would replace the cluster and fail the
+  // "nothing dispatched to it" check for a reason that has nothing to do with the panel.
+  store.getState().pause()
   render(
     <GameStoreProvider store={store}>
       <WishPanel />
