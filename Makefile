@@ -101,7 +101,7 @@ test/check/fast: node_modules ## Prove check/fast reads the index and names the 
 ##@ Code quality
 
 .PHONY: check
-check: check/format check/lint check/types check/spelling check/audit test/coverage ## The whole gate except e2e
+check: check/format check/lint check/types check/spelling check/audit check/workflows test/coverage ## The whole gate except e2e
 
 # The pre-commit hook runs this and stops. CI runs the pieces of `check` above;
 # this one only looks at what is staged. GIT_INDEX_FILE is unexported at the top
@@ -131,6 +131,18 @@ check/types: node_modules ## Type-check every project
 .PHONY: check/audit
 check/audit: node_modules ## Check the dependencies the site ships for known vulnerabilities
 	npm audit --omit=dev --audit-level=moderate
+
+# Pinned; bumped by hand (or Renovate, via the comment below).
+# renovate: datasource=github-releases depName=rhysd/actionlint extractVersion=^v(?<version>.+)$
+ACTIONLINT_VERSION := 1.7.12
+
+.PHONY: check/workflows
+check/workflows: ## Lint the GitHub Actions workflows (actionlint, with shellcheck on run: steps)
+	if command -v actionlint >/dev/null 2>&1; then
+		actionlint
+	else
+		docker run --rm -v "$(CURDIR):/repo" --workdir /repo rhysd/actionlint:$(ACTIONLINT_VERSION) -color
+	fi
 
 .PHONY: check/site
 check/site: ## Check a deployed copy serves both pages and their assets (URL=https://…/)

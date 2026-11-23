@@ -17,6 +17,7 @@
   "words": [
     "acked",
     "Acking",
+    "actionlint",
     "argh",
     "arghcd",
     "autobutler",
@@ -64,7 +65,9 @@
     "powerups",
     "Recoverably",
     "repliable",
+    "rhysd",
     "Rollouts",
+    "shellcheck",
     "SIGPIPE",
     "slos",
     "stripspace",

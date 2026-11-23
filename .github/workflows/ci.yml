@@ -66,6 +66,10 @@ jobs:
         run: make check/spelling
       - name: Audit the shipped dependencies
         run: make check/audit
+      # A broken workflow fails silently or only on main (the deploy job never runs on a PR), so
+      # lint every workflow on every pull request.
+      - name: Lint the workflows
+        run: make check/workflows
       - name: Test the commit hooks
         run: make test/check/fast
       # Merge queue, push and manual runs have no pull request to read, so they skip this.
