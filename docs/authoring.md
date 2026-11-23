@@ -65,8 +65,11 @@ Every lesson page has the same four parts:
   stories and judgment. Never tool walkthroughs or the academy's own screens.** Those go in the
   lesson text, where they can be edited when a tool changes.
 - **Do:** the interactive part. `kind: 'game'` plays feauxbernetes chapters on `play.html`.
-  `kind: 'text'` describes an activity that has no player yet. New kinds (simulations, local labs)
-  are added to `LessonDo` in `types.ts` as their epics land.
+  `kind: 'simulation'` runs a decision simulation from `@sra/engine/decision/scenarios` on the
+  lesson page itself (the nines game, `docs/design/nines-game.md`); its checklist's `from` names a
+  card (`nines-half-year/buyNine`) or the Keep (`nines-half-year/keep`). `kind: 'text'` describes
+  an activity that has no player yet. New kinds (local labs) are added to `LessonDo` in `types.ts`
+  as their epics land.
 - **Check:** the "know before moving on" list. Write things a learner can test themselves on
   ("Explain why a copy comes back after you unplug it, without the word 'reconcile'"), not "Understand X".
   Four to six items. At least one should ask _why_.

@@ -20,19 +20,24 @@ export interface CheckItem {
   id: string
   text: string
   /**
-   * Where the lesson teaches this, as `<chapter id>/<step id>` for a game lesson, so every item
-   * traces to something the learner actually did. Tests check that the step exists.
+   * Where the lesson teaches this, so every item traces to something the learner actually did:
+   * `<chapter id>/<step id>` for a game lesson, `<scenario id>/<decision type or "keep">` for a
+   * simulation. Tests check that it exists.
    */
   from?: string
 }
 
 /**
- * The interactive part of a lesson. New kinds (a simulation from the toolkit, a local lab) are
- * added here as their epics land.
+ * The interactive part of a lesson. New kinds (a local lab) are added here as their epics land.
  */
 export type LessonDo =
   /** Feauxbernetes chapters, played on the game page, in order. IDs from `src/content/chapters`. */
   | { kind: 'game'; chapters: string[]; summary: string }
+  /**
+   * A decision simulation, played on the lesson page itself. The id is a scenario from
+   * `@sra/engine/decision/scenarios`. See docs/design/nines-game.md.
+   */
+  | { kind: 'simulation'; scenario: string; summary: string }
   /** Anything without a dedicated player yet: described in text. */
   | { kind: 'text'; summary: string }
 
@@ -55,6 +60,9 @@ export interface Lesson {
 
 /** A lesson whose Do step is game chapters. */
 export type GameLesson = Lesson & { do: Extract<LessonDo, { kind: 'game' }> }
+
+/** A lesson whose Do step is a decision simulation. */
+export type SimulationLesson = Lesson & { do: Extract<LessonDo, { kind: 'simulation' }> }
 
 /** A Practitioner week or a Reliability for Everyone module. */
 export interface Unit {

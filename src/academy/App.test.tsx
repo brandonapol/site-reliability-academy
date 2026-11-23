@@ -183,18 +183,47 @@ describe('a lesson', () => {
   })
 })
 
+describe('the nines game lesson (#18)', () => {
+  it('plays on the lesson page and records the chosen SLO as the Keep', async () => {
+    const user = userEvent.setup()
+    const { store } = renderAt('#/lesson/inkwell-nines?track=practitioner')
+    expect(screen.queryByRole('link', { name: 'Play this lesson' })).not.toBeInTheDocument()
+    const keep = () => screen.getByRole('heading', { level: 2, name: 'Keep' }).parentElement!
+    expect(keep()).toHaveTextContent('Until you choose, nothing is saved here.')
+
+    for (let month = 0; month < 6; month++) {
+      await user.click(screen.getByRole('button', { name: 'Ship the next feature' }))
+    }
+    expect(screen.getByRole('heading', { name: 'Morgan’s review' })).toHaveFocus()
+
+    await user.click(screen.getByRole('button', { name: '100%' }))
+    expect(screen.getByRole('status')).toHaveTextContent('100% has none')
+    expect(store.get().lessons['inkwell-nines']?.keep).toBeUndefined()
+
+    await user.click(screen.getByRole('button', { name: '99.9%' }))
+    expect(store.get().lessons['inkwell-nines']?.keep).toMatchObject({
+      kind: 'slo',
+      target: 0.999,
+      windowDays: 30,
+    })
+    expect(keep()).toHaveTextContent(
+      '99.9% of checkouts that succeed within 2 seconds, over 30 days'
+    )
+  })
+})
+
 describe('the progress page', () => {
   it('summarizes progress per track', async () => {
     const { store } = renderAt('#/progress')
-    expect(screen.getByText(/Practitioner:/).parentElement).toHaveTextContent('0 of 4 lessons')
+    expect(screen.getByText(/Practitioner:/).parentElement).toHaveTextContent('0 of 5 lessons')
     store.update((p) => ({
       ...p,
       lessons: { 'inkwell-boxes': { checked: [], completedAt: '2026-11-21T00:00:00Z' } },
     }))
     expect(await screen.findByText(/Practitioner:/)).toBeInTheDocument()
-    expect(screen.getByText(/Practitioner:/).parentElement).toHaveTextContent('1 of 4 lessons')
+    expect(screen.getByText(/Practitioner:/).parentElement).toHaveTextContent('1 of 5 lessons')
     expect(screen.getByText(/Reliability for Everyone:/).parentElement).toHaveTextContent(
-      '1 of 4 lessons'
+      '1 of 5 lessons'
     )
   })
 })

@@ -10,6 +10,7 @@ import {
   PROGRESS_KEY,
   serializeProgress,
   setChecked,
+  setKeep,
   setComplete,
   visitLesson,
 } from './progress'
@@ -86,6 +87,48 @@ describe('parseProgress', () => {
     ['null', 'null'],
   ])('rejects %s', (_, raw) => {
     expect(parseProgress(raw)).toBeUndefined()
+  })
+})
+
+describe('a Keep in progress (#18)', () => {
+  const SLO = {
+    kind: 'slo',
+    sli: 'Checkouts that succeed within 2 seconds',
+    target: 0.999,
+    windowDays: 30,
+    chosenAt: NOW.toISOString(),
+  } as const
+
+  it('is recorded, starts the lesson, and round-trips', () => {
+    const progress = setKeep(emptyProgress(), 'inkwell-nines', SLO, NOW)
+    expect(progress.lessons['inkwell-nines']).toEqual({
+      checked: [],
+      startedAt: NOW.toISOString(),
+      keep: SLO,
+    })
+    expect(parseProgress(serializeProgress(progress))).toEqual(progress)
+  })
+
+  it('leaves a save from before Keeps existing exactly as it was', () => {
+    const before = JSON.stringify({
+      version: 1,
+      lessons: { 'inkwell-measure': { checked: ['slo-parts'], startedAt: NOW.toISOString() } },
+      lastLesson: 'inkwell-measure',
+    })
+    expect(parseProgress(before)).toEqual(JSON.parse(before))
+  })
+
+  it.each([
+    ['an unknown kind', { ...SLO, kind: 'scorecard' }],
+    ['a 100% target', { ...SLO, target: 1 }],
+    ['a missing SLI', { ...SLO, sli: undefined }],
+    ['another window', { ...SLO, windowDays: 7 }],
+  ])('drops a Keep with %s and keeps the rest of the lesson', (_, keep) => {
+    const raw = JSON.stringify({
+      version: 1,
+      lessons: { 'inkwell-nines': { checked: ['tenfold'], keep } },
+    })
+    expect(parseProgress(raw)?.lessons['inkwell-nines']).toEqual({ checked: ['tenfold'] })
   })
 })
 

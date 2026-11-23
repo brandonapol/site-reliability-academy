@@ -1,4 +1,4 @@
-import type { GameLesson } from '../types'
+import type { GameLesson, SimulationLesson } from '../types'
 import BOXES_BRIEF from './briefs/inkwell-boxes.md?raw'
 import CHANGE_BRIEF from './briefs/inkwell-change.md?raw'
 import FIRST_PAGE_BRIEF from './briefs/inkwell-first-page.md?raw'
@@ -8,8 +8,9 @@ import MEASURE_BRIEF from './briefs/inkwell-measure.md?raw'
  * Phase 1: First week at Inkwell, the existing feauxbernetes chapters, one lesson per week. Shared
  * by the Practitioner track (weeks 1–4) and Reliability for Everyone (module 1), by reference.
  *
- * The chapter mapping follows #15; a game save carries into course progress through `progress/fromGameSave.ts`. Briefs (#20), the nines game
- * (#18) and the incident chapter (#16) are still to come.
+ * The chapter mapping follows #15; a game save carries into course progress through
+ * `progress/fromGameSave.ts`. Week 3 adds a second lesson, the nines-versus-cost game (#18), which
+ * runs on the lesson page instead of the game page.
  */
 
 export const INKWELL_BOXES: GameLesson = {
@@ -114,7 +115,7 @@ export const INKWELL_MEASURE: GameLesson = {
     kind: 'game',
     chapters: ['ch6-seeing-inside', 'ch7-slo'],
     summary:
-      'Play the seeing-inside and SLO chapters. The nines-versus-cost game joins them later.',
+      'Play the seeing-inside and SLO chapters. The nines-versus-cost game is the next lesson.',
   },
   check: [
     {
@@ -155,9 +156,50 @@ export const INKWELL_MEASURE: GameLesson = {
       note: 'why 100% is the wrong target and how an error budget turns that into a rule, right after you have picked your first SLO',
     },
   ],
+}
+
+export const INKWELL_NINES: SimulationLesson = {
+  id: 'inkwell-nines',
+  title: 'What each nine costs',
+  summary:
+    "Run Inkwell's checkout for six months. Buy nines, ship features, or promise 100%, and see what each costs. Then choose the SLO you will keep.",
+  do: {
+    kind: 'simulation',
+    scenario: 'nines-half-year',
+    summary:
+      'Each month, pick what the team works on. A report card shows money, features, downtime and the people who noticed. It takes five to ten minutes, and you can play it again with a different plan.',
+  },
+  check: [
+    {
+      id: 'tenfold',
+      text: 'Say how much downtime a month 99.9% and 99.99% allow, and what the extra nine cost Inkwell',
+      from: 'nines-half-year/buyNine',
+    },
+    {
+      id: 'nines-or-features',
+      text: 'Explain why buying a nine meant shipping fewer features',
+      from: 'nines-half-year/ship',
+    },
+    {
+      id: 'users-cannot-tell',
+      text: "Explain why users can't tell 99.99% from 99.999%, using the two bars on the report card",
+      from: 'nines-half-year/buyNine',
+    },
+    {
+      id: 'why-not-100',
+      text: "Explain why 100% is the wrong target: what promising it cost, and why it still wasn't 100%",
+      from: 'nines-half-year/promise100',
+    },
+    {
+      id: 'your-slo',
+      text: 'State your SLO as an SLI, a target and a window, and say why you picked that target',
+      from: 'nines-half-year/keep',
+    },
+  ],
   keep: {
     title: 'Your first SLO',
-    description: 'The SLO you chose for Inkwell checkout, from the options in the SLO chapter.',
+    description:
+      'The SLO you choose for Inkwell checkout at the end of the game. Until you choose, nothing is saved here.',
   },
 }
 
@@ -211,4 +253,10 @@ export const INKWELL_FIRST_PAGE: GameLesson = {
   },
 }
 
-export const PHASE_1_LESSONS = [INKWELL_BOXES, INKWELL_CHANGE, INKWELL_MEASURE, INKWELL_FIRST_PAGE]
+export const PHASE_1_LESSONS = [
+  INKWELL_BOXES,
+  INKWELL_CHANGE,
+  INKWELL_MEASURE,
+  INKWELL_NINES,
+  INKWELL_FIRST_PAGE,
+]
