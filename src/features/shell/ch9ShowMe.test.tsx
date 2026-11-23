@@ -42,7 +42,7 @@ describe('Ch 9 in the real app (#32)', () => {
 
       // Do what Show me does: switch tab, or go to the sub-view that renders the target. Targets
       // with no owning tab live on a page the step's text links to.
-      const route = routeForShowMeTarget(targetId!)
+      const route = routeForShowMeTarget(targetId!, game)
       const tab = tabForShowMeTarget(targetId!)
       const link = linkIn(step.body)
       await act(async () => {

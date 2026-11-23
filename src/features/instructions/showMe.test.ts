@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 
-import type { Action } from '@sra/engine/game'
+import { blankState, startChapter, type Action } from '@sra/engine/game'
+import { createGameConfig } from '../../content/config'
 import {
   describeSolution,
   findShowMeTarget,
@@ -111,6 +112,35 @@ describe('routeForShowMeTarget', () => {
     expect(routeForShowMeTarget('app:search')).toBe('/argh-cd/applications')
     expect(routeForShowMeTarget('sync:search')).toBe('/argh-cd/app/search')
     expect(routeForShowMeTarget('channel:dm-kai')).toBeUndefined()
+  })
+
+  it('opens the pull request a check or PR action belongs to, and the wish editor (#65)', () => {
+    const config = createGameConfig()
+    const { state } = startChapter(config, blankState(config), '05-ci')
+    const pr = state.gitops.pullRequests.at(-1)!
+    const pipeline = Object.values(state.ci.pipelines).at(-1)!
+    const e2e = pipeline.stages.flatMap((stage) => stage.jobs).at(-1)!
+
+    expect(routeForShowMeTarget(`job:${e2e.id}`, state)).toBe(`/gitnub/inkwell/web/pull/${pr.id}`)
+    expect(routeForShowMeTarget(`pr:${pr.id}:merge`, state)).toBe(
+      `/gitnub/inkwell/web/pull/${pr.id}`
+    )
+    expect(routeForShowMeTarget('propose-change', state)).toBe('/gitnub/inkwell/deploy')
+    expect(routeForShowMeTarget('pr:no-such-pr:merge', state)).toBeUndefined()
+  })
+})
+
+describe('describeSolution for proposing a wish (#65)', () => {
+  it('says what to set, since "Propose change" only appears after an edit', () => {
+    const text = describeSolution({
+      type: 'openPR',
+      repo: 'inkwell/deploy',
+      title: 'Bump web to 2.0',
+      change: { kind: 'wish', app: 'web', wish: { app: 'web', version: '2.0', copies: 3 } },
+    })
+    expect(text).toBe(
+      'In the wish editor, set **web** to version **2.0** with **3** copies, then **Propose change**.'
+    )
   })
 })
 

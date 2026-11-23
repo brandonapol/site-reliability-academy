@@ -64,7 +64,7 @@ export function Instructions() {
     const targetId = step?.solution && targetIdFor(step.solution, game)
     if (!targetId) return
     const tab = tabForShowMeTarget(targetId)
-    const route = routeForShowMeTarget(targetId)
+    const route = routeForShowMeTarget(targetId, game)
     if (route && !findShowMeTarget(targetId) && tab && game.ui.unlockedTabs.includes(tab)) {
       // The target lives on a sub-view (e.g. Argh CD's Applications, not Boxes): go straight to
       // it. Changing the hash is enough; `useBrowserRouteSync` opens the owning tab from the URL.

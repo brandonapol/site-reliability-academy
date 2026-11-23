@@ -43,10 +43,8 @@ async function applyCoupon(page: Page) {
   await page.getByRole('button', { name: 'Apply', exact: true }).click()
 }
 
-/** The step's hint: "The wish editor is the Code tab of inkwell/deploy." */
+/** Show me opens the wish editor; the edit is the learner's, as its "Do this" says (#65). */
 async function openWishEditor(page: Page) {
-  await page.getByRole('tab', { name: /GitNub/ }).click()
-  await page.evaluate(() => (window.location.hash = '#/gitnub/inkwell/deploy'))
   await expect(page.getByRole('heading', { name: 'Wish editor' })).toBeVisible()
 }
 
@@ -74,29 +72,6 @@ const STEP_INPUTS: Record<string, (page: Page) => Promise<void>> = {
 }
 
 /**
- * Checks and PR actions live on a pull request's page, which Show me doesn't navigate to: the step
- * text names the PR and the learner opens it. Look through each repo's pull requests for the one
- * showing `target`, the way a learner would click around GitNub.
- */
-async function openPullRequestShowing(page: Page, target: Locator) {
-  await page.getByRole('tab', { name: /GitNub/ }).click()
-  for (const repo of ['web', 'billing', 'deploy']) {
-    await page.evaluate((r) => (window.location.hash = `#/gitnub/inkwell/${r}/pulls`), repo)
-    const links = page.locator(`a[href*="/gitnub/inkwell/${repo}/pull/"]`)
-    const count = await links.count()
-    for (let i = count - 1; i >= 0; i--) {
-      await links.nth(i).click()
-      const found = await target.waitFor({ state: 'visible', timeout: 3_000 }).then(
-        () => true,
-        () => false
-      )
-      if (found) return
-      await page.goBack()
-    }
-  }
-}
-
-/**
  * Plays the open lesson's chapters until the lesson bar says they're done. Each pass does the one
  * thing the screen asks for: keep going past a finished chapter, type a name, or follow "Show me".
  * Steps that wait on the fake clock just get time.
@@ -109,7 +84,6 @@ async function playChapters(page: Page) {
   // `data-target`) and keep clicking that until the step moves on.
   let pending: { step: string; target: string } | undefined
   const inputDone = new Set<string>()
-  const misses = new Map<string, number>()
   for (let pass = 0; pass < 600; pass++) {
     if (await done.isVisible()) return
 
@@ -149,12 +123,6 @@ async function playChapters(page: Page) {
 
     if (pending) {
       const target = page.locator(`[data-target="${pending.target}"]:visible`).first()
-      if (!(await target.isVisible()) && /^(job|pr):/.test(pending.target)) {
-        const tries = (misses.get(pending.target) ?? 0) + 1
-        misses.set(pending.target, tries)
-        // Give the PR's checks a moment to appear before going looking for the PR.
-        if (tries % 4 === 0) await openPullRequestShowing(page, target)
-      }
       if (await target.isVisible()) {
         if (!(await clicked(target))) await closeWhatCovers(page)
         // Some targets are a card you select, then confirm: the Ops Console's wishes, and the
