@@ -121,7 +121,11 @@ describe('a lesson', () => {
       expect(screen.getByRole('heading', { level: 2, name: part })).toBeInTheDocument()
     }
     expect(screen.queryByRole('heading', { level: 2, name: 'Keep' })).not.toBeInTheDocument()
-    expect(screen.getByText(/Video coming/)).toBeInTheDocument()
+    // No video yet, so the written brief stands in.
+    expect(screen.getByRole('heading', { level: 3, name: 'The one thing' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: "AWS's summary of the April 2011 event" })
+    ).toBeVisible()
     expect(screen.getByRole('link', { name: 'Play this lesson' })).toHaveAttribute(
       'href',
       '/play.html?lesson=inkwell-boxes&track=practitioner'
