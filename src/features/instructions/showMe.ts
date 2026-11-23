@@ -1,7 +1,9 @@
 import { CHANNELS } from '../../content/channels'
 import type { Tab } from '@sra/engine/events'
 import type { Action, GameState } from '@sra/engine/game'
+import type { PullRequest } from '@sra/engine/gitops'
 import { labelForTab } from '../browser/tabs'
+import { DEPLOY_REPO, ORG, prPath, repoPath } from '../gitnub/data'
 
 /**
  * The `data-target` convention (issue #11): "Show me" finds the element for a step's `solution`
@@ -98,15 +100,35 @@ export function tabForShowMeTarget(targetId: string): Tab | undefined {
   return undefined
 }
 
+/** The pull request a `pr:<id>:…` or `job:<jobId>` target belongs to. */
+function pullRequestFor(targetId: string, state: GameState): PullRequest | undefined {
+  if (targetId.startsWith('pr:')) {
+    const prId = targetId.split(':')[1]
+    return state.gitops.pullRequests.find((pr) => pr.id === prId)
+  }
+  if (targetId.startsWith('job:')) {
+    const jobId = targetId.slice(4)
+    const pipeline = Object.values(state.ci.pipelines).find((candidate) =>
+      candidate.stages.some((stage) => stage.jobs.some((job) => job.id === jobId))
+    )
+    return state.gitops.pullRequests.find((pr) => pr.id === pipeline?.prId)
+  }
+  return undefined
+}
+
 /**
  * The route inside a tab that renders a Show me target, for targets the tab switch alone doesn't
  * reach (#103): Argh CD keeps its Applications / Boxes / app views as sub-routes, so a learner
- * left on Boxes has no `database` tile or `app:*` card on screen to highlight.
+ * left on Boxes has no `database` tile or `app:*` card on screen to highlight. A pull request's
+ * checks and actions live on its own page, and "Propose change" in the wish editor, which only
+ * appears once a wish has been edited (#65); those need `state` to find.
  */
-export function routeForShowMeTarget(targetId: string): string | undefined {
+export function routeForShowMeTarget(targetId: string, state?: GameState): string | undefined {
   if (targetId === 'database' || targetId.startsWith('app:')) return '/argh-cd/applications'
   if (targetId.startsWith('sync:')) return `/argh-cd/app/${targetId.slice(5)}`
-  return undefined
+  if (targetId === 'propose-change') return repoPath(ORG, DEPLOY_REPO)
+  const pr = state && pullRequestFor(targetId, state)
+  return pr ? prPath(pr) : undefined
 }
 
 /**
@@ -143,8 +165,13 @@ export function describeSolution(action: Action): string {
       const box = action.boxId.replace(/^box-/, '').toUpperCase()
       return `Turn box ${box} ${action.on ? 'on' : 'off'}.`
     }
-    case 'openPR':
-      return 'Propose this change.'
+    case 'openPR': {
+      // The button only appears once the wish is edited, so say what to edit (#65).
+      const { change } = action
+      if (change.kind !== 'wish') return 'Propose this change.'
+      const { app, version, copies } = change.wish
+      return `In the wish editor, set **${app}** to version **${version}** with **${copies}** ${copies === 1 ? 'copy' : 'copies'}, then **Propose change**.`
+    }
     case 'approvePR':
       return 'Approve the pull request.'
     case 'mergePR':
