@@ -120,3 +120,18 @@ describe('validateCourse', () => {
     expect(problems).toContain('check item "one" appears twice in "Bad_Id"')
   })
 })
+
+describe('Phase 1 reading (#21)', () => {
+  const linksOn = (id: string) => findLesson(COURSE, id)?.reading?.map((item) => item.href) ?? []
+
+  it('assigns SRE book chapter 1 in week 1 and chapter 3 in week 3', () => {
+    expect(linksOn('inkwell-boxes')).toEqual(['https://sre.google/sre-book/introduction/'])
+    expect(linksOn('inkwell-measure')).toEqual(['https://sre.google/sre-book/embracing-risk/'])
+  })
+
+  it('says why to read each one now', () => {
+    for (const id of ['inkwell-boxes', 'inkwell-measure']) {
+      expect(findLesson(COURSE, id)?.reading?.every((item) => item.note)).toBe(true)
+    }
+  })
+})

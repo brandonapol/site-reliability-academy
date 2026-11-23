@@ -4,7 +4,7 @@ import type { GameLesson } from '../types'
  * Phase 1: First week at Inkwell, the existing feauxbernetes chapters, one lesson per week. Shared
  * by the Practitioner track (weeks 1–4) and Reliability for Everyone (module 1), by reference.
  *
- * The chapter mapping follows #15; a game save carries into course progress through `progress/fromGameSave.ts`. Checklists (#19), briefs (#20), reading (#21), the nines game
+ * The chapter mapping follows #15; a game save carries into course progress through `progress/fromGameSave.ts`. Checklists (#19), briefs (#20), the nines game
  * (#18) and the incident chapter (#16) are still to come.
  */
 
@@ -19,6 +19,13 @@ export const INKWELL_BOXES: GameLesson = {
     summary: 'Play the welcome, boxes, order form and self-heal chapters.',
   },
   check: [],
+  reading: [
+    {
+      title: 'Site Reliability Engineering, chapter 1: Introduction',
+      href: 'https://sre.google/sre-book/introduction/',
+      note: 'where the job came from and what an SRE team is for, now that you have done a day of it',
+    },
+  ],
 }
 
 export const INKWELL_CHANGE: GameLesson = {
@@ -46,6 +53,13 @@ export const INKWELL_MEASURE: GameLesson = {
       'Play the seeing-inside and SLO chapters. The nines-versus-cost game joins them later.',
   },
   check: [],
+  reading: [
+    {
+      title: 'Site Reliability Engineering, chapter 3: Embracing Risk',
+      href: 'https://sre.google/sre-book/embracing-risk/',
+      note: 'why 100% is the wrong target and how an error budget turns that into a rule, right after you have picked your first SLO',
+    },
+  ],
   keep: {
     title: 'Your first SLO',
     description: 'The SLO you chose for Inkwell checkout, from the options in the SLO chapter.',
