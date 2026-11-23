@@ -4,7 +4,7 @@ import type { GameLesson } from '../types'
  * Phase 1: First week at Inkwell, the existing feauxbernetes chapters, one lesson per week. Shared
  * by the Practitioner track (weeks 1–4) and Reliability for Everyone (module 1), by reference.
  *
- * The chapter mapping follows #15. Checklists (#19), briefs (#20), reading (#21), the nines game
+ * The chapter mapping follows #15; a game save carries into course progress through `progress/fromGameSave.ts`. Checklists (#19), briefs (#20), reading (#21), the nines game
  * (#18) and the incident chapter (#16) are still to come.
  */
 
