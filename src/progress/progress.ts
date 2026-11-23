@@ -11,12 +11,30 @@ import type { Lesson, TrackId } from '../course'
 export const PROGRESS_KEY = 'sra:progress:v1'
 export const PROGRESS_VERSION = 1
 
+/**
+ * The SLO a learner chose at the end of the nines game (#18): week 3's Keep. `target` is a fraction
+ * (0.999), never 1, since 100% can't be an SLO.
+ */
+export interface SloKeep {
+  kind: 'slo'
+  sli: string
+  target: number
+  windowDays: 30
+  /** ISO timestamp. */
+  chosenAt: string
+}
+
+/** The artifact a lesson's Keep section shows, when the learner made one in the lesson. */
+export type LessonKeep = SloKeep
+
 export interface LessonProgress {
   /** Ticked "know before moving on" items, by check item id. */
   checked: string[]
   /** ISO timestamps. */
   startedAt?: string
   completedAt?: string
+  /** Added in #18 without a version bump: optional, so every earlier save still parses. */
+  keep?: LessonKeep
 }
 
 export interface Progress {
@@ -94,6 +112,21 @@ export function setComplete(
   return withEntry(progress, lessonId, next)
 }
 
+/** Records the lesson's Keep, replacing an earlier one. Starts the lesson if it wasn't. */
+export function setKeep(
+  progress: Progress,
+  lessonId: string,
+  keep: LessonKeep,
+  now: Date
+): Progress {
+  const current = entry(progress, lessonId)
+  return withEntry(progress, lessonId, {
+    ...current,
+    startedAt: current.startedAt ?? now.toISOString(),
+    keep,
+  })
+}
+
 export function lessonStatus(progress: Progress, lessonId: string): LessonStatus {
   const current = progress.lessons[lessonId]
   if (!current) return 'not-started'
@@ -139,6 +172,7 @@ export function parseProgress(raw: string): Progress | undefined {
       checked: value.checked.filter((item): item is string => typeof item === 'string'),
       ...(typeof value.startedAt === 'string' ? { startedAt: value.startedAt } : {}),
       ...(typeof value.completedAt === 'string' ? { completedAt: value.completedAt } : {}),
+      ...parseKeep(value.keep),
     }
   }
   return {
@@ -149,6 +183,25 @@ export function parseProgress(raw: string): Progress | undefined {
       : {}),
     ...(typeof candidate.lastLesson === 'string' ? { lastLesson: candidate.lastLesson } : {}),
   }
+}
+
+/** A saved Keep, or nothing if it isn't one this version understands. An unreadable Keep is
+ * dropped on its own rather than discarding the whole save. */
+function parseKeep(value: unknown): { keep?: LessonKeep } {
+  if (!value || typeof value !== 'object') return {}
+  const keep = value as Partial<SloKeep>
+  if (
+    keep.kind !== 'slo' ||
+    typeof keep.sli !== 'string' ||
+    typeof keep.target !== 'number' ||
+    !(keep.target > 0 && keep.target < 1) ||
+    keep.windowDays !== 30 ||
+    typeof keep.chosenAt !== 'string'
+  ) {
+    return {}
+  }
+  const { kind, sli, target, windowDays, chosenAt } = keep
+  return { keep: { kind, sli, target, windowDays, chosenAt } }
 }
 
 export function serializeProgress(progress: Progress): string {

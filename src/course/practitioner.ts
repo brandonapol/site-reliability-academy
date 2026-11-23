@@ -3,6 +3,7 @@ import {
   INKWELL_CHANGE,
   INKWELL_FIRST_PAGE,
   INKWELL_MEASURE,
+  INKWELL_NINES,
 } from './lessons/phase1'
 import type { Track, Unit } from './types'
 
@@ -76,7 +77,7 @@ export const PRACTITIONER: Track = {
           'Seeing inside, SLO, and a nines-versus-cost game',
           ['browser'],
           'First SLO, chosen from options',
-          [INKWELL_MEASURE]
+          [INKWELL_MEASURE, INKWELL_NINES]
         ),
         week(
           4,

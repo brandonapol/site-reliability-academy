@@ -1,9 +1,19 @@
 import { useEffect, useId } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 
+import { findScenario } from '@sra/engine/decision/scenarios'
 import { COURSE, findLesson, neighbors, placementFor, type Lesson, type TrackId } from '../course'
+import { NinesGame } from '../features/nines'
+import { target } from '../features/nines/format'
 import { Markdown } from '../features/shared/Markdown'
-import { setChecked, setComplete, visitLesson } from '../progress/progress'
+import {
+  setChecked,
+  setComplete,
+  setKeep,
+  visitLesson,
+  type LessonKeep,
+} from '../progress/progress'
+import { browserStorage } from '../progress/store'
 import { lessonHref, playHref } from './links'
 import { NotFound } from './NotFound'
 import { TierBadges } from './parts'
@@ -102,7 +112,7 @@ export function LessonPage() {
         <section aria-labelledby="keep">
           <h2 id="keep">Keep</h2>
           <h3>{lesson.keep.title}</h3>
-          <p>{lesson.keep.description}</p>
+          {record?.keep ? <Kept keep={record.keep} /> : <p>{lesson.keep.description}</p>}
         </section>
       )}
 
@@ -155,6 +165,15 @@ function Watch({ lesson }: { lesson: Lesson }) {
 
 function DoPart({ lesson, trackId }: { lesson: Lesson; trackId: TrackId }) {
   if (lesson.do.kind === 'text') return <p>{lesson.do.summary}</p>
+  if (lesson.do.kind === 'simulation') {
+    return (
+      <SimulationPart
+        lessonId={lesson.id}
+        scenarioId={lesson.do.scenario}
+        summary={lesson.do.summary}
+      />
+    )
+  }
   return (
     <>
       <p>{lesson.do.summary}</p>
@@ -166,6 +185,63 @@ function DoPart({ lesson, trackId }: { lesson: Lesson; trackId: TrackId }) {
       <p className="hint">
         The game works best on a laptop or desktop. It saves as you go, and a bar at the top brings
         you back here when you're done.
+      </p>
+    </>
+  )
+}
+
+/** A decision simulation, played right here. The course validator guarantees the scenario exists. */
+function SimulationPart({
+  lessonId,
+  scenarioId,
+  summary,
+}: {
+  lessonId: string
+  scenarioId: string
+  summary: string
+}) {
+  const store = useProgressStore()
+  const scenario = findScenario(scenarioId)
+  const choice = scenario?.keep
+  return (
+    <>
+      <p>{summary}</p>
+      {scenario && (
+        <NinesGame
+          scenario={scenario}
+          storage={browserStorage()}
+          onKeep={(value) => {
+            if (!choice) return
+            const keep: LessonKeep = {
+              kind: 'slo',
+              sli: choice.sli,
+              target: value,
+              windowDays: choice.windowDays,
+              chosenAt: new Date().toISOString(),
+            }
+            store.update((current) => setKeep(current, lessonId, keep, new Date()))
+          }}
+        />
+      )}
+    </>
+  )
+}
+
+/** The Keep the learner made in this lesson. */
+function Kept({ keep }: { keep: LessonKeep }) {
+  const budget = (1 - keep.target) * keep.windowDays * 24 * 60
+  return (
+    <>
+      <p className="kept">
+        <strong>{target(keep.target)}</strong> of {keep.sli.toLowerCase()}, over {keep.windowDays}{' '}
+        days.
+      </p>
+      <p className="hint">
+        That leaves an error budget of about{' '}
+        {budget < 1 ? `${Math.round(budget * 60)} seconds` : `${Number(budget.toFixed(1))} minutes`}{' '}
+        of full outage in {keep.windowDays} days. Chosen{' '}
+        {new Date(keep.chosenAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}. Play the
+        game again to change it.
       </p>
     </>
   )

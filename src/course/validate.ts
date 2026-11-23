@@ -6,14 +6,20 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
  * Checks the course data for mistakes that would break navigation or progress. Returns a list of
  * problems; empty means valid. Run as a test (`course.test.ts`), so a bad edit fails CI.
  *
- * `chapterIds` are the game's chapter IDs (`src/content/chapters`), passed in so this stays a pure
- * function of its inputs.
+ * `chapterIds` are the game's chapter IDs (`src/content/chapters`) and `scenarioIds` the decision
+ * simulations' (`@sra/engine/decision/scenarios`), passed in so this stays a pure function of its
+ * inputs.
  */
-export function validateCourse(course: Course, chapterIds: readonly string[]): string[] {
+export function validateCourse(
+  course: Course,
+  chapterIds: readonly string[],
+  scenarioIds: readonly string[]
+): string[] {
   const problems: string[] = []
   const lessonsById = new Map<string, Lesson>()
   const otherIds = new Map<string, string>()
   const knownChapters = new Set(chapterIds)
+  const knownScenarios = new Set(scenarioIds)
 
   const claim = (id: string, what: string) => {
     if (!KEBAB.test(id)) problems.push(`${what} id "${id}" is not kebab-case`)
@@ -58,6 +64,11 @@ export function validateCourse(course: Course, chapterIds: readonly string[]): s
                 problems.push(`lesson "${lesson.id}" refers to unknown chapter "${chapter}"`)
               }
             }
+          }
+          if (lesson.do.kind === 'simulation' && !knownScenarios.has(lesson.do.scenario)) {
+            problems.push(
+              `lesson "${lesson.id}" refers to unknown scenario "${lesson.do.scenario}"`
+            )
           }
         }
       }
