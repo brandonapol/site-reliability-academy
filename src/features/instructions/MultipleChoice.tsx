@@ -26,7 +26,9 @@ export function MultipleChoice({ stepId, options, interpolate }: MultipleChoiceP
       <legend className={styles.srOnly}>Choose one</legend>
       {options.map((option) => (
         <label
-          key={option.id}
+          // Keyed by step too: consecutive steps often share option ids ("ruled-out"), and a
+          // reused radio would arrive already checked, so picking it again would do nothing.
+          key={`${stepId}:${option.id}`}
           className={styles.optionCard}
           data-target={`option:${stepId}:${option.id}`}
         >

@@ -185,7 +185,10 @@ export function Instructions() {
               ))}
 
               {story.solutionShown && step.solution && (
-                <div className={styles.solution}>
+                <div
+                  className={styles.solution}
+                  data-show-me-target={targetIdFor(step.solution, game)}
+                >
                   <p className={styles.solutionLabel}>Do this:</p>
                   <InstructionsText source={describeSolution(step.solution)} />
                 </div>
@@ -202,7 +205,14 @@ export function Instructions() {
                   </button>
                 )}
                 {step.solution && !story.solutionShown && (
-                  <button type="button" className={styles.action} onClick={onShowMe}>
+                  <button
+                    type="button"
+                    className={styles.action}
+                    onClick={onShowMe}
+                    // Which element Show me points at, for the end-to-end playthrough (#22). The
+                    // revealed solution below carries it too, once this button is gone.
+                    data-show-me-target={targetIdFor(step.solution, game)}
+                  >
                     Show me
                   </button>
                 )}

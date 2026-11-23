@@ -54,6 +54,23 @@ export function PagerDoody() {
                 ? 'Acknowledged'
                 : 'Triggered'}
           </p>
+          {incident.phase === 'open' &&
+            incident.marks.acked === undefined &&
+            overlay !== 'page' && (
+              // The same Acknowledge as the page itself, for a learner who closed the page first.
+              <button
+                type="button"
+                className={styles.ack}
+                data-target="page-ack"
+                onClick={() => {
+                  dispatch({ type: 'clickTarget', targetId: 'page-ack' })
+                  dispatch({ type: 'incident', command: { kind: 'ack' } })
+                  dispatch({ type: 'closeOverlay' })
+                }}
+              >
+                Acknowledge
+              </button>
+            )}
           {incident.phase === 'open' && !incident.declaration && (
             <button
               type="button"

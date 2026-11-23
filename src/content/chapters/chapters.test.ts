@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { blankState, startChapter, type Action, type GameState } from '@sra/engine/game'
+import { blankState, reduce, startChapter, type Action, type GameState } from '@sra/engine/game'
 import { scoreValues, type TimelineKind } from '@sra/engine/incident'
 import { flushEffects, play, playChapter, playChapterRecoverably } from '@sra/engine/story/harness'
 import { currentStep } from '@sra/engine/story/runner'
@@ -376,5 +376,28 @@ describe('chapters', () => {
       expect(state.ui.unlockedTabs).toContain('pagerdoody')
       expect(state.incident.current).toBeUndefined()
     })
+  })
+})
+
+describe('playing straight through, not jumping', () => {
+  it('keeps each PR to its own pipeline, and never locks a tab again once it is open', () => {
+    let state = playChapter(config, config.chapters[0].id).state
+    let unlocked = state.ui.unlockedTabs
+    for (const chapter of config.chapters.slice(1)) {
+      const next = reduce(config, state, { type: 'continueStory' })
+      state = flushEffects(config, next.state, next.effects)
+      expect(state.story.chapterId).toBe(chapter.id)
+      for (const tab of unlocked)
+        expect(state.ui.unlockedTabs, `${chapter.id} keeps ${tab}`).toContain(tab)
+      for (const pr of state.gitops.pullRequests) {
+        const pipelines = Object.values(state.ci.pipelines).filter((p) => p.prId === pr.id)
+        expect(pipelines.length, `${chapter.id}: ${pr.id}`).toBeLessThanOrEqual(1)
+      }
+      state = playChapter(config, chapter.id, { from: state }).state
+      unlocked = state.ui.unlockedTabs
+    }
+    // Week 4 ends holding the pager, with the incident's scorecard still there to keep.
+    expect(state.ui.unlockedTabs).toContain('pagerdoody')
+    expect(state.incident.current?.phase).toBe('resolved')
   })
 })

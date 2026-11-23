@@ -52,6 +52,23 @@ describe('PagerDoody', () => {
     expect(screen.getByText('No incidents. That’s a good day.')).toBeInTheDocument()
   })
 
+  it('lets a learner who closed the page acknowledge it from the incident list', async () => {
+    const user = userEvent.setup()
+    const store = renderPager()
+    act(() =>
+      store.getState().dispatch({
+        type: 'incident',
+        command: { kind: 'page', service: 'billing', text: 'checkout errors' },
+      })
+    )
+    act(() => store.getState().dispatch({ type: 'closeOverlay' }))
+    expect(screen.queryByRole('dialog', { name: 'Incoming page' })).toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Acknowledge' }))
+    expect(store.getState().game.incident.current?.marks.acked).toBeDefined()
+    expect(screen.queryByRole('button', { name: 'Acknowledge' })).toBeNull()
+  })
+
   it('the page overlay acknowledges and closes, with no sound', async () => {
     const user = userEvent.setup()
     const store = renderPager()
