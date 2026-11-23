@@ -7,7 +7,10 @@ export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
+  // One retry on CI shows whether a failure is flaky, but a test that only passes on its retry
+  // still fails the run: a flaky test is a bug, in the test or in the app.
   retries: process.env.CI ? 1 : 0,
+  failOnFlakyTests: Boolean(process.env.CI),
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: `http://localhost:${PORT}/site-reliability-academy/`,

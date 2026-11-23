@@ -76,14 +76,43 @@ link.**
   alone.
 - **Lint** — ESLint, including the engine boundary: nothing under `packages/engine` may import
   React, zustand or anything under `src/`, and `src/content`, `src/course` and
-  `src/progress/progress.ts` must stay pure.
-- **Types** — `tsc -b --noEmit` over every project.
+  `src/progress/progress.ts` must stay pure. **Warnings fail too** (`--max-warnings 0`): fix the
+  warning, or disable it on that line with a comment saying why.
+- **Types** — `tsc -b --noEmit` over every project, including `e2e/`.
 - **Spelling** — `make check/spelling` runs cspell against `cspell.json`. A new proper noun, tool or
   acronym fails the build until it is added to `words` there. `ignoreWords` holds British spellings
   that are already in shipped code or saved-game keys (`versionBehaviour`); don't add to it.
-- **Unit tests** — including the course validator, which fails on duplicate or malformed IDs and
-  on a lesson that names a game chapter that doesn't exist.
-- **E2E** — the Playwright playthrough and the axe accessibility checks, in their own CI job.
+- **Unit tests and a coverage floor** — `make test/coverage` fails when statements, branches,
+  functions or lines drop below the thresholds in `vite.config.ts`. They sit just under the
+  current numbers: new code brings its tests. Raise them as coverage grows; never lower them to
+  get a PR through. The course validator fails on duplicate or malformed IDs and on a lesson that
+  names a game chapter that doesn't exist.
+- **Dependencies** — `make check/audit`: no known vulnerability in what the site ships. Dev
+  tooling is kept current by Renovate.
+- **E2E** — the Playwright suites, with axe accessibility checks, in their own job.
+  `e2e/phase1.spec.ts` plays weeks 1–4 from an empty browser through the real UI. On CI a test
+  that only passes on its retry **fails the run** (`failOnFlakyTests`): a flaky test is a bug in
+  the test or the app, so find it rather than re-running.
+- **After every deploy** — `make check/site` loads both live pages and every script and stylesheet
+  they reference. Pages must deploy from GitHub Actions (Settings → Pages → Source): in branch mode
+  GitHub publishes the raw repository over the build, and the live site goes blank.
+- **Branch protection** — `main` takes changes only through a pull request whose `check`,
+  `check-misc` and `e2e` jobs passed against the current `main`.
+
+### Test the way a learner plays
+
+Unit tests usually jump straight to a chapter (`?chapter=`, `startChapter`). That hides bugs that
+only appear when one chapter follows another: an overlay left open, a pipeline left over, a tab
+re-locked. Five of those reached `main` before `e2e/phase1.spec.ts` played the weeks in order
+(#64). So:
+
+- **A change to a chapter's `setup`, or to what carries over between chapters**, gets a case in
+  the "playing straight through" test in `src/content/chapters/chapters.test.ts`, not only a
+  jump-to-chapter test.
+- **A new lesson or chapter in a phase with a playthrough** extends that playthrough. A step Show
+  me can't complete on its own (the learner types or picks something first) goes in its
+  `STEP_INPUTS`, and is worth an issue: if the test needs help, so does a learner.
+- **A UI bug gets a test that fails without the fix.** Check that it does.
 
 ### Scope discipline
 

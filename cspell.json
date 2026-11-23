@@ -68,10 +68,13 @@
     "SIGPIPE",
     "slos",
     "stripspace",
+    "stylesheet",
+    "stylesheets",
     "testlab",
     "tinyo",
     "tolerations",
     "troughing",
+    "unbuilt",
     "vite",
     "Vitest"
   ],

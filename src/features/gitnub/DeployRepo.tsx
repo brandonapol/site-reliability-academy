@@ -29,9 +29,11 @@ export function DeployRepo() {
 
   const dirty = Boolean(current) && (current.version !== version || current.copies !== copies)
 
+  // Depends on the draft's parts, not the `draft` object, which is new on every render.
   const titles = useMemo(
-    () => (current && draft ? titleOptions(selectedApp, current, draft) : []),
-    [current, draft, selectedApp]
+    () =>
+      current ? titleOptions(selectedApp, current, { app: selectedApp, version, copies }) : [],
+    [current, selectedApp, version, copies]
   )
 
   const pickApp = (app: string) => {

@@ -31,8 +31,16 @@ jobs:
         run: make check/lint
       - name: Type-check
         run: make check/types
-      - name: Unit tests
-        run: make test/unit
+      # The unit tests, failing below the coverage floor in vite.config.ts.
+      - name: Unit tests with coverage
+        run: make test/coverage
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
       - name: Build
         run: make build
       - name: Upload build
@@ -56,6 +64,8 @@ jobs:
         uses: ./.github/actions/setup-node
       - name: Spellcheck
         run: make check/spelling
+      - name: Audit the shipped dependencies
+        run: make check/audit
       - name: Test the commit hooks
         run: make test/check/fast
       # Merge queue, push and manual runs have no pull request to read, so they skip this.
@@ -86,11 +96,12 @@ jobs:
             playwright-report/
           retention-days: 7
 
-  # Publishes the site to GitHub Pages (#46) once every check above has passed on `main`. Pull
-  # requests run the checks but never deploy. One-time setup: Settings → Pages → Source: GitHub
-  # Actions.
+  # Publishes the site to GitHub Pages (#46) once every check above has passed on `main`: on a push,
+  # or by hand (Actions → CI → Run workflow on main) to redeploy without a new commit. Pull
+  # requests run the checks but never deploy. Settings → Pages → Source must be "GitHub Actions":
+  # in branch mode GitHub publishes the raw repo over this deploy.
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     needs: [check, check-misc, e2e]
     runs-on: ubuntu-latest
     permissions:
@@ -120,3 +131,7 @@ jobs:
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      # The deploy reporting success isn't the site working: load both pages and every script and
+      # stylesheet they reference, from the live URL.
+      - name: Smoke-test the live site
+        run: make check/site URL=${{ steps.deployment.outputs.page_url }}

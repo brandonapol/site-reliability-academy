@@ -23,6 +23,16 @@ export default defineConfig(({ command, isPreview }) => ({
     },
   },
   test: {
+    // `make test/coverage` (CI) fails below these. They sit just under today's numbers, so new
+    // code has to bring its tests with it. Raise them as coverage grows; never lower them to
+    // get a PR through.
+    coverage: {
+      provider: 'v8',
+      include: ['src/**', 'packages/**'],
+      exclude: ['**/*.test.*', '**/__fixtures__/**', 'src/test/**', '**/*.d.ts'],
+      reporter: ['text-summary', 'html'],
+      thresholds: { statements: 90, branches: 83, functions: 91, lines: 91 },
+    },
     projects: [
       {
         extends: true,
