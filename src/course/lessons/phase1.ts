@@ -1,4 +1,8 @@
 import type { GameLesson } from '../types'
+import BOXES_BRIEF from './briefs/inkwell-boxes.md?raw'
+import CHANGE_BRIEF from './briefs/inkwell-change.md?raw'
+import FIRST_PAGE_BRIEF from './briefs/inkwell-first-page.md?raw'
+import MEASURE_BRIEF from './briefs/inkwell-measure.md?raw'
 
 /**
  * Phase 1: First week at Inkwell, the existing feauxbernetes chapters, one lesson per week. Shared
@@ -13,6 +17,7 @@ export const INKWELL_BOXES: GameLesson = {
   title: 'Boxes, and what turns them back on',
   summary:
     'Your first day at Inkwell: what SRE is, the boxes that run things, writing down what you want, and watching a crashed copy come back by itself.',
+  brief: BOXES_BRIEF,
   do: {
     kind: 'game',
     chapters: ['00-welcome', '01-boxes', '02-order-form', '03-self-heal'],
@@ -64,6 +69,7 @@ export const INKWELL_CHANGE: GameLesson = {
   title: 'How a change reaches production',
   summary:
     'Follow a merged change through GitOps and CI, break a build on purpose, and read the failure.',
+  brief: CHANGE_BRIEF,
   do: {
     kind: 'game',
     chapters: ['04-gitops', '05-ci', '06-wrap'],
@@ -103,6 +109,7 @@ export const INKWELL_MEASURE: GameLesson = {
   title: 'Seeing inside, and how good is good enough',
   summary:
     '"Is it working?" is an agreed number. Learn what an SLO is, what each nine costs, and why 100% is the wrong target.',
+  brief: MEASURE_BRIEF,
   do: {
     kind: 'game',
     chapters: ['ch6-seeing-inside', 'ch7-slo'],
@@ -159,6 +166,7 @@ export const INKWELL_FIRST_PAGE: GameLesson = {
   title: 'Alerts, and your first page',
   summary:
     'Alerts that wake a human only when users hurt, then a traffic spike, a database upgrade, and the pager in your hands.',
+  brief: FIRST_PAGE_BRIEF,
   do: {
     kind: 'game',
     chapters: ['ch8-alerts', 'bonus-traffic', 'bonus-database'],
