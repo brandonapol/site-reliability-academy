@@ -1,6 +1,6 @@
 import { EVERYONE } from './everyone'
 import { PRACTITIONER } from './practitioner'
-import type { Course, Lesson, Phase, Track, TrackId, Unit } from './types'
+import type { Course, GameLesson, Lesson, Phase, Track, TrackId, Unit } from './types'
 
 export type * from './types'
 export { validateCourse } from './validate'
@@ -41,6 +41,19 @@ export function findLesson(course: Course, lessonId: string): Lesson | undefined
 /** Every lesson in a track, in course order. */
 export function lessonsOf(track: Track): Lesson[] {
   return track.phases.flatMap((phase) => phase.units.flatMap((unit) => unit.lessons))
+}
+
+export function isGameLesson(lesson: Lesson | undefined): lesson is GameLesson {
+  return lesson?.do.kind === 'game'
+}
+
+/** Every lesson that plays game chapters, once each, in course order. */
+export function gameLessonsOf(course: Course): GameLesson[] {
+  const seen = new Set<string>()
+  return course.tracks
+    .flatMap(lessonsOf)
+    .filter(isGameLesson)
+    .filter((lesson) => !seen.has(lesson.id) && Boolean(seen.add(lesson.id)))
 }
 
 export function lessonsOfUnit(unit: Unit): Lesson[] {

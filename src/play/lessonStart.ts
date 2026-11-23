@@ -1,10 +1,6 @@
-import { COURSE, findLesson, type GameLesson, type Lesson } from '../course'
+import { COURSE, findLesson, isGameLesson, type GameLesson } from '../course'
 
 export type { GameLesson }
-
-function isGameLesson(lesson: Lesson | undefined): lesson is GameLesson {
-  return lesson?.do.kind === 'game'
-}
 
 export interface LessonStart {
   /** The lesson the game was opened for, if `?lesson=` named a game lesson. */
