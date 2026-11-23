@@ -87,6 +87,9 @@ link.**
   current numbers: new code brings its tests. Raise them as coverage grows; never lower them to
   get a PR through. The course validator fails on duplicate or malformed IDs and on a lesson that
   names a game chapter that doesn't exist.
+- **Workflows** — `make check/workflows` runs actionlint (with shellcheck on every `run:` step)
+  over `.github/workflows`. The deploy job only runs on `main`, so a mistake there would
+  otherwise first show up after a merge.
 - **Dependencies** — `make check/audit`: no known vulnerability in what the site ships. Dev
   tooling is kept current by Renovate.
 - **E2E** — the Playwright suites, with axe accessibility checks, in their own job.
