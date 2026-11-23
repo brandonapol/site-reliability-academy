@@ -16,7 +16,10 @@ export function StatusComposer() {
   const dispatch = useDispatch()
   const posted = incident?.statusPosts.map((post) => post.stage) ?? []
   const nextStage = STATUS_STAGES.find((stage) => !posted.includes(stage)) ?? 'resolved'
-  const [stage, setStage] = useState<StatusStage>(nextStage)
+  // Follows the incident to its next stage (someone else may have posted one since this mounted)
+  // until the learner picks a stage themselves.
+  const [pickedStage, setPickedStage] = useState<StatusStage>()
+  const stage = pickedStage ?? nextStage
   const [optionId, setOptionId] = useState<string>()
 
   if (!incident || incident.phase !== 'open' || !content) return null
@@ -24,7 +27,7 @@ export function StatusComposer() {
   const chosen = options.find((option) => option.id === optionId)
 
   const pickStage = (next: StatusStage) => {
-    setStage(next)
+    setPickedStage(next)
     setOptionId(undefined)
   }
 
@@ -35,10 +38,11 @@ export function StatusComposer() {
       onSubmit={(event) => {
         event.preventDefault()
         if (!chosen) return
+        // The same `status-option:<id>` Show me highlights, so a step can gate on the pick.
+        dispatch({ type: 'clickTarget', targetId: `status-option:${chosen.id}` })
         dispatch({ type: 'incident', command: { kind: 'postStatus', stage, optionId: chosen.id } })
         setOptionId(undefined)
-        const after = STATUS_STAGES[STATUS_STAGES.indexOf(stage) + 1]
-        if (after) setStage(after)
+        setPickedStage(undefined)
       }}
     >
       <p className={styles.composerTitle}>Status page update</p>

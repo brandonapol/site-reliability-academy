@@ -27,11 +27,12 @@ describe('incident content (#31)', () => {
     expect(characters.taylor).toBeDefined()
   })
 
-  it('has a sensible typical-team range and three notes for every scorecard number', () => {
-    for (const range of Object.values(INCIDENT_CONTENT.typical)) {
-      expect(range.low).toBeLessThan(range.high)
-      expect(Object.values(range.notes).every((note) => note.trim() !== '')).toBe(true)
+  it('explains what moves every scorecard number, with no benchmark to compare against', () => {
+    for (const explainer of Object.values(INCIDENT_CONTENT.scoring)) {
+      expect(explainer.label.trim()).not.toBe('')
+      expect(explainer.moves.trim()).not.toBe('')
     }
+    expect(JSON.stringify(INCIDENT_CONTENT)).not.toMatch(/typical|other learners|most teams/i)
   })
 
   it('only models impact for real services, gated on a behaviour flag so a rollback ends it', () => {

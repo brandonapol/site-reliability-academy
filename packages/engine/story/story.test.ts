@@ -147,6 +147,58 @@ describe('wrong answers', () => {
   })
 })
 
+describe('reactions to wrong picks', () => {
+  // The toy chapter's `wish` step, plus a reaction to one of its wrong answers (Ch 9's mitigation
+  // picks work this way: a wrong pick costs time *and* gets Kai's inline explanation).
+  const reacting: GameConfig = {
+    ...config,
+    chapters: config.chapters.map((chapter) => ({
+      ...chapter,
+      steps: chapter.steps.map((step) =>
+        step.id === 'wish'
+          ? {
+              ...step,
+              reactions: [
+                {
+                  id: 'one-costs',
+                  when: (_state, event) =>
+                    event.type === 'optionChosen' && event.optionId === 'one',
+                  effects: [{ type: 'toast' as const, text: 'That cost you a minute.' }],
+                },
+              ],
+            }
+          : step
+      ),
+    })),
+  }
+
+  it('still shows Kai’s response and counts a miss when a reaction fires', () => {
+    const before = play(reacting, initialState(reacting).state, [
+      clickStart,
+      nameSelf,
+      { type: 'skipStep' },
+    ])
+    const picked = play(reacting, before, [
+      { type: 'chooseOption', stepId: 'wish', optionId: 'one' },
+    ])
+    expect(picked.ui.toast).toBe('That cost you a minute.')
+    expect(picked.story.misses).toBe(before.story.misses + 1)
+    expect(picked.story.lastWrongAnswer).toMatchObject({ stepId: 'wish', optionId: 'one' })
+  })
+})
+
+describe('passTime', () => {
+  it('moves the fake clock on by the given amount', () => {
+    const state = started()
+    const { state: after } = reduce(config, state, {
+      type: 'applyEffect',
+      effect: { type: 'passTime', ms: 300_000 },
+    })
+    // `applyEffect` itself costs one action's worth of time on top.
+    expect(after.clock.now - state.clock.now).toBeGreaterThanOrEqual(300_000)
+  })
+})
+
 describe('effects', () => {
   it('reduce returns delayed effects instead of applying them', () => {
     const atWish = play(config, started(), [clickStart, nameSelf, { type: 'skipStep' }])

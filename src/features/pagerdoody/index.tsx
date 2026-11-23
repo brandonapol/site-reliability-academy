@@ -1,4 +1,5 @@
 import { useDispatch, useGame } from '../../store'
+import { Scorecard } from '../incident'
 import styles from './PagerDoody.module.css'
 
 const DAYS = [
@@ -44,14 +45,46 @@ export function PagerDoody() {
 
       <h2>Incidents</h2>
       {incident ? (
-        <p>
-          <strong>{incident.declaration?.severity ?? 'Paged'}</strong> · {incident.service} ·{' '}
-          {incident.phase === 'resolved'
-            ? 'Resolved'
-            : incident.marks.acked !== undefined
-              ? 'Acknowledged'
-              : 'Triggered'}
-        </p>
+        <div className={styles.incident}>
+          <p>
+            <strong>{incident.declaration?.severity ?? 'Paged'}</strong> · {incident.service} ·{' '}
+            {incident.phase === 'resolved'
+              ? 'Resolved'
+              : incident.marks.acked !== undefined
+                ? 'Acknowledged'
+                : 'Triggered'}
+          </p>
+          {incident.phase === 'open' && !incident.declaration && (
+            <button
+              type="button"
+              className={styles.ack}
+              data-target="page-declare"
+              onClick={() => {
+                dispatch({ type: 'clickTarget', targetId: 'page-declare' })
+                dispatch({
+                  type: 'incident',
+                  command: { kind: 'declare', severity: 'SEV2', service: incident.service },
+                })
+              }}
+            >
+              Declare incident
+            </button>
+          )}
+          {incident.phase === 'open' && incident.declaration && (
+            <button
+              type="button"
+              className={styles.ack}
+              data-target="page-resolve"
+              onClick={() => {
+                dispatch({ type: 'clickTarget', targetId: 'page-resolve' })
+                dispatch({ type: 'incident', command: { kind: 'resolve' } })
+              }}
+            >
+              Resolve
+            </button>
+          )}
+          {incident.phase === 'resolved' && <Scorecard incident={incident} />}
+        </div>
       ) : (
         <p className={styles.empty}>No incidents. That’s a good day.</p>
       )}

@@ -11,6 +11,7 @@ import {
   TYPING_LEAD_MS,
   type Timers,
 } from './gameStore'
+import { INCIDENT_HISTORY_KEY } from './incidentHistory'
 import { MAX_SAVED_MESSAGES, STORAGE_KEY, type StorageLike } from './persistence'
 
 const config = toyConfig()
@@ -389,5 +390,40 @@ describe('determinism', () => {
     vi.setSystemTime(new Date('2026-09-17T12:00:00Z'))
     const second = play()
     expect(second).toEqual(first)
+  })
+})
+
+describe('incident history (#16)', () => {
+  const resolve = (store: ReturnType<typeof createGameStore>) => {
+    const { dispatch } = store.getState()
+    dispatch({ type: 'incident', command: { kind: 'page', service: 'billing', text: 'x' } })
+    dispatch({ type: 'incident', command: { kind: 'ack' } })
+    dispatch({ type: 'incident', command: { kind: 'resolve' } })
+  }
+
+  it('records each run when it resolves, and compares the next one with it', () => {
+    const storage = memoryStorage()
+    const store = createGameStore({ config, storage, timers })
+    resolve(store)
+    expect(store.getState().incidentPast).toEqual([])
+    expect(JSON.parse(storage.data.get(INCIDENT_HISTORY_KEY) ?? '[]')).toHaveLength(1)
+
+    store.getState().restartChapter()
+    resolve(store)
+    expect(store.getState().incidentPast).toHaveLength(1)
+    expect(JSON.parse(storage.data.get(INCIDENT_HISTORY_KEY) ?? '[]')).toHaveLength(2)
+  })
+
+  it('does not record a run again on reload, and keeps the comparison', () => {
+    const storage = memoryStorage()
+    const first = createGameStore({ config, storage, timers })
+    resolve(first)
+    first.getState().restartChapter()
+    resolve(first)
+    first.getState().flushSave()
+
+    const reloaded = createGameStore({ config, storage, timers })
+    expect(JSON.parse(storage.data.get(INCIDENT_HISTORY_KEY) ?? '[]')).toHaveLength(2)
+    expect(reloaded.getState().incidentPast).toHaveLength(1)
   })
 })

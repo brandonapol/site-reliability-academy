@@ -32,6 +32,29 @@ function setBillingVersion(store: GameStore, version: string) {
 }
 
 describe('inkwell.example/pricing checkout — billing@2.4.1 (#17, component test over version)', () => {
+  it('tells the story whether a coupon was applied when Pay is clicked (#32)', async () => {
+    const store = renderPricing()
+    const targets: string[] = []
+    const dispatch = store.getState().dispatch
+    act(() =>
+      store.setState({
+        dispatch: (action) => {
+          if (action.type === 'clickTarget') targets.push(action.targetId)
+          dispatch(action)
+        },
+      })
+    )
+    setBillingVersion(store, '2.4.1')
+    const user = userEvent.setup()
+    expect(screen.getByRole('button', { name: /^pay/i })).toHaveAttribute(
+      'data-target',
+      'inkwell-pay'
+    )
+    await user.click(screen.getByRole('button', { name: /try save10/i }))
+    await user.click(screen.getByRole('button', { name: /^pay/i }))
+    expect(targets).toEqual(['inkwell-pay'])
+  })
+
   it('shows the pre-filled test card and the suggested coupon', () => {
     renderPricing()
     expect(screen.getByLabelText('Card number')).toHaveValue('4242 4242 4242 4242')

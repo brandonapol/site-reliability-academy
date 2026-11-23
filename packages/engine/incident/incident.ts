@@ -264,6 +264,11 @@ function postStatus(
 ): IncidentResult {
   const option = config.incident?.statusUpdates[stage].find((o) => o.id === optionId)
   if (!option) return noop(state)
+  // Posting the very same update again says nothing new (and lets a chapter post it as a step's
+  // effect without doubling up when the learner already posted it from the composer).
+  if (current.statusPosts.some((post) => post.stage === stage && post.optionId === optionId)) {
+    return noop(state)
+  }
   const now = state.clock.now
   const update: StatusUpdate = {
     id: `status-${state.statusPage.updates.length + 1}`,
@@ -318,6 +323,18 @@ export function recordIfOpen(
 }
 
 /**
+ * A rollback only counts once GitNub agrees with what's running. Argh CD's own History & Rollback
+ * changes the cluster but not GitNub, so self-heal puts the bad version straight back; that's a
+ * blip, not a recovery. With no GitNub wish for the app at all (before GitOps), the cluster is
+ * the only truth there is.
+ */
+function agreesWithGitNub(state: GameState, service: string): boolean {
+  const repoWish = state.gitops.deployRepo.wishes[service]
+  if (!repoWish) return true
+  return state.cluster.wishes[service]?.version === repoWish.version
+}
+
+/**
  * The incident's clock-driven pass, run on every `tick`: the customer impact counter samples
  * telemetry and grows by however many customers were turned away since the last sample. It stops
  * for good once the incident is mitigated. After a rollback has started, the moment telemetry
@@ -343,7 +360,11 @@ export function tickIncident(
   })
 
   const rolledBack = current.timeline.some((entry) => entry.kind === 'rollbackStarted')
-  if (rolledBack && impactBumpAt(model, state.cluster, current.service, now) === 0) {
+  if (
+    rolledBack &&
+    agreesWithGitNub(state, current.service) &&
+    impactBumpAt(model, state.cluster, current.service, now) === 0
+  ) {
     const recovered = recover(
       sampled,
       sampled.incident.current!,

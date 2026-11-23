@@ -132,13 +132,15 @@ export interface StatusUpdateOption {
 
 export type ScoreMetric = 'mtta' | 'timeToMitigate' | 'timeToResolve' | 'customersAffected'
 
-/** "A typical team" for one scorecard number, and notes on what moves it. */
-export interface TypicalRange {
+/**
+ * How one scorecard number is explained. There is deliberately no benchmark here: the scorecard
+ * compares a learner only with their own earlier runs (spec section 7), never with "a typical team"
+ * or other learners.
+ */
+export interface ScoreExplainer {
   label: string
-  low: number
-  high: number
-  /** Shown when the learner's number is under `low`, between the two, or over `high`. */
-  notes: { below: string; within: string; above: string }
+  /** What moves this number, in plain words, shown on every run including the first. */
+  moves: string
 }
 
 /** Incident content, from `src/content/incident.ts`. The engine never imports content directly. */
@@ -155,5 +157,5 @@ export interface IncidentContent {
   statusComponents: Record<string, 'website' | 'search' | 'checkout'>
   impact: Record<string, ImpactModel>
   statusUpdates: Record<StatusStage, StatusUpdateOption[]>
-  typical: Record<ScoreMetric, TypicalRange>
+  scoring: Record<ScoreMetric, ScoreExplainer>
 }

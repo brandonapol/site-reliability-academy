@@ -1,6 +1,10 @@
-import type { Incident, ScoreMetric, TypicalRange } from './types'
+import type { Incident, ScoreExplainer, ScoreMetric } from './types'
 
-export type ScoreBand = 'below' | 'within' | 'above'
+/** The four numbers from one run. Undefined where the incident never reached that point. */
+export type ScoreValues = Record<ScoreMetric, number | undefined>
+
+/** This run against the learner's own earlier ones. Lower is better for all four numbers. */
+export type Trend = 'better' | 'same' | 'worse'
 
 export interface ScoreRow {
   metric: ScoreMetric
@@ -8,10 +12,13 @@ export interface ScoreRow {
   /** Fake-clock ms for the three durations; a head count for `customersAffected`. Undefined when
    * the incident never reached that point (e.g. never acknowledged). */
   value?: number
-  typical: { low: number; high: number }
-  band?: ScoreBand
-  /** What moved this number. No pass/fail: just how it compares with a typical team. */
-  note?: string
+  /** The learner's previous run and their best earlier run. Both absent on a first run. */
+  previous?: number
+  best?: number
+  /** How this run compares with the previous one. */
+  trend?: Trend
+  /** What moves this number. No pass/fail and no benchmark: just what the learner's choices did. */
+  moves: string
 }
 
 export const SCORE_METRICS: readonly ScoreMetric[] = [
@@ -30,7 +37,7 @@ function since(start: number | undefined, end: number | undefined): number | und
  * The raw numbers: time to acknowledge (page → ack), time to mitigate and time to resolve (both
  * measured from when the incident started, i.e. the page), and customers affected.
  */
-export function scoreValues(incident: Incident): Record<ScoreMetric, number | undefined> {
+export function scoreValues(incident: Incident): ScoreValues {
   const { marks, startedAt } = incident
   return {
     mtta: since(marks.paged, marks.acked),
@@ -40,29 +47,40 @@ export function scoreValues(incident: Incident): Record<ScoreMetric, number | un
   }
 }
 
-export function band(value: number, range: { low: number; high: number }): ScoreBand {
-  if (value < range.low) return 'below'
-  if (value > range.high) return 'above'
-  return 'within'
+export function trend(value: number, previous: number): Trend {
+  if (value < previous) return 'better'
+  if (value > previous) return 'worse'
+  return 'same'
 }
 
+/**
+ * The scorecard (#16). `past` is the learner's own earlier runs, oldest first, and nobody else's:
+ * the course compares a learner only with their past self. On a first run `past` is empty and each
+ * row is just the number and what moves it.
+ */
 export function scorecard(
   incident: Incident,
-  typical: Record<ScoreMetric, TypicalRange>
+  scoring: Record<ScoreMetric, ScoreExplainer>,
+  past: readonly ScoreValues[] = []
 ): ScoreRow[] {
   const values = scoreValues(incident)
   return SCORE_METRICS.map((metric) => {
-    const range = typical[metric]
     const value = values[metric]
+    const earlier = past.map((run) => run[metric]).filter((v): v is number => v !== undefined)
+    const previous = earlier.at(-1)
     const row: ScoreRow = {
       metric,
-      label: range.label,
+      label: scoring[metric].label,
       value,
-      typical: { low: range.low, high: range.high },
+      moves: scoring[metric].moves,
     }
-    if (value === undefined) return row
-    const b = band(value, range)
-    return { ...row, band: b, note: range.notes[b] }
+    if (previous === undefined) return row
+    return {
+      ...row,
+      previous,
+      best: Math.min(...earlier),
+      ...(value === undefined ? {} : { trend: trend(value, previous) }),
+    }
   })
 }
 
