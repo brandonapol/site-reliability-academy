@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { CHAPTERS } from '../content/chapters'
+import { PHASE_1_LESSONS } from './lessons/phase1'
 import {
   COURSE,
   findLesson,
@@ -133,5 +134,38 @@ describe('Phase 1 reading (#21)', () => {
     for (const id of ['inkwell-boxes', 'inkwell-measure']) {
       expect(findLesson(COURSE, id)?.reading?.every((item) => item.note)).toBe(true)
     }
+  })
+})
+
+describe('Phase 1 checklists (#19)', () => {
+  const steps = new Set(
+    CHAPTERS.flatMap((chapter) => chapter.steps.map((step) => `${chapter.id}/${step.id}`))
+  )
+
+  for (const lesson of PHASE_1_LESSONS) {
+    it(`${lesson.id} has four to six items, each traced to a step it plays`, () => {
+      expect(lesson.check.length).toBeGreaterThanOrEqual(4)
+      expect(lesson.check.length).toBeLessThanOrEqual(6)
+      for (const item of lesson.check) {
+        expect(item.from, item.id).toBeDefined()
+        expect(steps.has(item.from ?? ''), `${item.id} → ${item.from}`).toBe(true)
+        expect(lesson.do.chapters).toContain(item.from?.split('/')[0])
+      }
+    })
+  }
+
+  it('asks why at least once a week, and never "Understand X"', () => {
+    for (const lesson of PHASE_1_LESSONS) {
+      expect(
+        lesson.check.some((item) => /\bwhy\b/i.test(item.text)),
+        lesson.id
+      ).toBe(true)
+      expect(lesson.check.every((item) => !/^understand\b/i.test(item.text))).toBe(true)
+    }
+  })
+
+  it('carries the culture thread in week 3: 100% is the wrong target', () => {
+    const week3 = PHASE_1_LESSONS.find((lesson) => lesson.id === 'inkwell-measure')
+    expect(week3?.check.some((item) => item.text.includes('100%'))).toBe(true)
   })
 })

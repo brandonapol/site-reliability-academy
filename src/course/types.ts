@@ -19,6 +19,11 @@ export type TrackId = 'practitioner' | 'everyone'
 export interface CheckItem {
   id: string
   text: string
+  /**
+   * Where the lesson teaches this, as `<chapter id>/<step id>` for a game lesson, so every item
+   * traces to something the learner actually did. Tests check that the step exists.
+   */
+  from?: string
 }
 
 /**
