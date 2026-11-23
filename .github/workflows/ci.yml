@@ -112,7 +112,7 @@ jobs:
       cancel-in-progress: false
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment-retry.outputs.page_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -128,10 +128,25 @@ jobs:
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist/
+      # deploy-pages sometimes asks for the artifact before GitHub's artifact service lists it, and
+      # fails with "No artifacts named github-pages were found" half a second after a successful
+      # upload (about half the deploys in November 2026). Re-running the job doesn't help: each
+      # attempt adds another artifact and the next one finds too many. So: wait, then one retry.
+      - name: Let the artifact settle
+        run: sleep 15
       - name: Deploy to Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Wait before retrying the deploy
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+      - name: Deploy to Pages (retry)
+        id: deployment-retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
       # The deploy reporting success isn't the site working: load both pages and every script and
-      # stylesheet they reference, from the live URL.
+      # stylesheet they reference, from the live URL. This also fails the job if both deploy
+      # attempts failed, since there's then no URL to check.
       - name: Smoke-test the live site
-        run: make check/site URL=${{ steps.deployment.outputs.page_url }}
+        run: make check/site URL=${{ steps.deployment.outputs.page_url || steps.deployment-retry.outputs.page_url }}
