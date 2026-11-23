@@ -86,6 +86,10 @@ test: test/unit ## Run unit tests (not e2e)
 test/unit: node_modules ## Run the Vitest suites (engine, course, progress, UI)
 	npm test
 
+.PHONY: test/coverage
+test/coverage: node_modules ## Run the unit tests with coverage; fails below the floor in vite.config.ts
+	npx vitest run --coverage
+
 .PHONY: test/e2e
 test/e2e: node_modules ## Run the Playwright suite against a production build
 	npm run e2e
@@ -97,7 +101,7 @@ test/check/fast: node_modules ## Prove check/fast reads the index and names the 
 ##@ Code quality
 
 .PHONY: check
-check: check/format check/lint check/types check/spelling test/unit ## The whole gate except e2e
+check: check/format check/lint check/types check/spelling check/audit test/coverage ## The whole gate except e2e
 
 # The pre-commit hook runs this and stops. CI runs the pieces of `check` above;
 # this one only looks at what is staged. GIT_INDEX_FILE is unexported at the top
@@ -117,12 +121,24 @@ check/format: node_modules ## Check formatting (prettier)
 	npm run format:check
 
 .PHONY: check/lint
-check/lint: node_modules ## Lint (eslint, including the engine's import boundary)
-	npm run lint
+check/lint: node_modules ## Lint (eslint, including the engine's import boundary); warnings fail too
+	npm run lint -- --max-warnings 0
 
 .PHONY: check/types
 check/types: node_modules ## Type-check every project
 	npm run typecheck
+
+.PHONY: check/audit
+check/audit: node_modules ## Check the dependencies the site ships for known vulnerabilities
+	npm audit --omit=dev --audit-level=moderate
+
+.PHONY: check/site
+check/site: ## Check a deployed copy serves both pages and their assets (URL=https://…/)
+	if [[ -z "$(URL)" ]]; then
+		echo "Usage: make check/site URL=<site URL>"
+		exit 1
+	fi
+	./scripts/smoke-site.bash "$(URL)"
 
 .PHONY: check/spelling
 check/spelling: node_modules ## Check spelling in code and docs
