@@ -29,7 +29,13 @@ export const TABS: TabInfo[] = [
     id: 'gitnub',
     label: 'GitNub',
     path: '/gitnub',
-    address: 'gitnub.example/inkwell/deploy',
+    address: 'gitnub.example',
+    // The page you're on, not a fixed repo: the address once said inkwell/deploy over the org
+    // page and every pull request (#66).
+    addressForPath: (pathname) => {
+      const rest = pathname.replace(/^\/gitnub\/?/, '')
+      return rest ? `gitnub.example/${rest}` : undefined
+    },
     blurb: 'Where wishes and pull requests live.',
   },
   {
