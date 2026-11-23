@@ -11,7 +11,7 @@ const enginePurityMessage =
   'packages/engine is the framework-free simulation the whole site builds on: it may not import React, Zustand or anything from src/.'
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'node_modules', 'playwright-report', 'test-results'] },
+  { ignores: ['dist', 'coverage', 'node_modules', 'playwright-report', 'test-results', '.claude'] },
 
   {
     files: ['**/*.{ts,tsx}'],
