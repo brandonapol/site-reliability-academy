@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
@@ -112,9 +112,18 @@ describe('Browser', () => {
     expect(screen.getByRole('textbox', { name: 'Address' })).toHaveValue('flack.example/platform')
     expect(screen.getByRole('textbox', { name: 'Address' })).toHaveAttribute('readonly')
     act(() => store.getState().dispatch({ type: 'openTab', tab: 'gitnub' }))
-    expect(screen.getByRole('textbox', { name: 'Address' })).toHaveValue(
-      'gitnub.example/inkwell/deploy'
-    )
+    expect(screen.getByRole('textbox', { name: 'Address' })).toHaveValue('gitnub.example')
+  })
+
+  it('names the GitNub page actually showing, not a fixed repo (#66)', async () => {
+    renderApp('', ['flack', 'gitnub'])
+    const address = screen.getByRole('textbox', { name: 'Address' })
+    act(() => void (window.location.hash = '#/gitnub/inkwell/web/pulls'))
+    await waitFor(() => expect(address).toHaveValue('gitnub.example/inkwell/web/pulls'))
+    expect(screen.getByRole('heading', { name: 'Pull requests' })).toBeInTheDocument()
+    act(() => void (window.location.hash = '#/gitnub'))
+    await waitFor(() => expect(address).toHaveValue('gitnub.example'))
+    expect(screen.getByRole('heading', { name: 'Repositories' })).toBeInTheDocument()
   })
 
   it('back and forward move through the tabs actually visited', async () => {
